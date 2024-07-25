@@ -5,13 +5,9 @@ function PromotionCard() {
     <>
       <Box
         sx={{
-          backgroundImage: `url(https://s1.elespanol.com/2023/09/01/series/netflix/791181272_235731526_1024x576.jpg)`,
+          backgroundImage: `url(https://imgsrv.crunchyroll.com/cdn-cgi/image/fit=contain,format=auto,quality=85,width=1200,height=675/catalog/crunchyroll/a249096c7812deb8c3c2c907173f3774.jpg)`,
           backgroundPosition: "top",
           backgroundSize: "cover",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "end",
-          alignItems: "center",
           width: "100%",
           height: "460px",
         }}
