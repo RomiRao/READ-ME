@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 
 function Home() {
   return (
-    <Box paddingY={5} paddingX={8}>
+    <Box paddingY={5} paddingX={10}>
       <Carousel
         emulateTouch
         swipeable
@@ -21,7 +21,7 @@ function Home() {
         <PromotionCard />
         <PromotionCard />
       </Carousel>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} marginTop={4}>
         <Grid item xs>
           <GenreCard />
         </Grid>
