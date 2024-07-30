@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 
 function Home() {
   return (
-    <Box paddingY={5} paddingX={10}>
+    <>
       <Carousel
         emulateTouch
         swipeable
@@ -122,7 +122,7 @@ function Home() {
           </Grid>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 }
 
