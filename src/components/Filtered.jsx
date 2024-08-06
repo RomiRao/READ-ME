@@ -1,4 +1,5 @@
-import { Box, Button, Container, Slider, Typography } from "@mui/material";
+import { Box, Button, Slider, Typography } from "@mui/material";
+
 import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
