@@ -1,11 +1,11 @@
+import { useState } from "react";
 import { Box, Button, Slider, Typography } from "@mui/material";
-
 import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { useState } from "react";
 
+//Slider price value
 function valuetext(value) {
   return `${value}°C`;
 }
@@ -13,6 +13,7 @@ function valuetext(value) {
 const minDistance = 10;
 
 function Filtered({ books }) {
+  //Slider price function
   const [value1, setValue1] = useState([0, 1000]);
 
   const handleChange1 = (event, newValue, activeThumb) => {
@@ -66,17 +67,22 @@ function Filtered({ books }) {
         <Button variant="contained">Search</Button>
       </Grid>
 
+      {/* Books display */}
       <Grid xs={9} container spacing={3}>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
+        {books.map((book) => (
+          <Grid xs={3} padding={3}>
+            <Box
+              component="img"
+              sx={{
+                maxWidth: "200px",
+                maxHeight: "250px",
+                boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
+              }}
+              alt={`${book.name}`}
+              src={`${book.cover}`}
+            />
+          </Grid>
+        ))}
       </Grid>
     </Grid>
   );
