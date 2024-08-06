@@ -11,7 +11,7 @@ function valuetext(value) {
 
 const minDistance = 10;
 
-function Filtered() {
+function Filtered({ books }) {
   const [value1, setValue1] = useState([0, 1000]);
 
   const handleChange1 = (event, newValue, activeThumb) => {
@@ -66,66 +66,6 @@ function Filtered() {
       </Grid>
 
       <Grid xs={9} container spacing={3}>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs={3} padding={3}>
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "200px",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
         <Grid xs={3} padding={3}>
           <Box
             component="img"
