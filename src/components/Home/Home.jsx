@@ -3,11 +3,11 @@ import PromotionCard from "./PromotionCard";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Box, Typography } from "@mui/material";
 import GenreCard from "./GenreCard";
-import Grid from "@mui/material/Grid";
+import Grid from "@mui/material/Unstable_Grid2";
 
 function Home() {
   return (
-    <Box paddingY={5} paddingX={10}>
+    <>
       <Carousel
         emulateTouch
         swipeable
@@ -122,7 +122,7 @@ function Home() {
           </Grid>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 }
 
