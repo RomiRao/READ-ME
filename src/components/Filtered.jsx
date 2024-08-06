@@ -76,20 +76,24 @@ function Filtered() {
 
       {/* Books display */}
       <Grid xs={9} container spacing={3}>
-        {books.map((book) => (
-          <Grid xs={3} padding={3}>
-            <Box
-              component="img"
-              sx={{
-                maxWidth: "200px",
-                maxHeight: "250px",
-                boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
-              }}
-              alt={`${book.name}`}
-              src={`${book.cover}`}
-            />
-          </Grid>
-        ))}
+        {books.length === 0 ? (
+          <Typography>Cargando</Typography>
+        ) : (
+          books.map((book) => (
+            <Grid xs={3} padding={3}>
+              <Box
+                component="img"
+                sx={{
+                  maxWidth: "200px",
+                  maxHeight: "250px",
+                  boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
+                }}
+                alt={`${book.name}`}
+                src={`${book.cover}`}
+              />
+            </Grid>
+          ))
+        )}
       </Grid>
     </Grid>
   );
