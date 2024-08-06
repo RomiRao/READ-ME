@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import useBooks from "../hooks/useBooks";
 
 //Slider price value
 function valuetext(value) {
@@ -12,7 +13,13 @@ function valuetext(value) {
 
 const minDistance = 10;
 
-function Filtered({ books }) {
+function Filtered() {
+  const { obtData, books } = useBooks();
+
+  useEffect(() => {
+    obtData();
+  }, []);
+
   //Slider price function
   const [value1, setValue1] = useState([0, 1000]);
 
