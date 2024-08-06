@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-
 import "./App.css";
-import Home from "./components/Home/Home";
 import Navbar from "./components/Navbar";
-import Filtered from "./components/Filtered";
 import { Box } from "@mui/material";
+
+import { RouterProvider } from "react-router-dom";
+import router from "./router/router";
 
 //firestore config
 import { collection, getDocs } from "firebase/firestore";
@@ -32,8 +32,7 @@ function App() {
     <>
       <Navbar />
       <Box paddingY={5} paddingX={10}>
-        {/* <Home /> */}
-        <Filtered books={books} />
+        <RouterProvider router={router} />
       </Box>
     </>
   );
