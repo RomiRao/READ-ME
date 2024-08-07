@@ -34,7 +34,19 @@ const useBooks = () => {
     }
   };
 
-  return { obtData, books, detailBook, spBook };
+  const filterBooks = async (filter) => {
+    try {
+      const books = collection(db, "books");
+      const q = query(books, where("genre", "array-contains", filter));
+
+      const responseDb = await getDocs(q);
+      setBooks(responseDb.docs.map((doc) => doc.data()));
+    } catch (error) {
+      console.error("Error al obtener datos de Firestore:", error);
+    }
+  };
+
+  return { obtData, books, detailBook, spBook, filterBooks };
 };
 
 export default useBooks;
