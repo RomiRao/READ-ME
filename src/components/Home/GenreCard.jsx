@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import useBooks from "../../hooks/useBooks";
+import { useNavigate } from "react-router-dom";
+
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 
@@ -10,10 +12,15 @@ import Grid from "@mui/material/Unstable_Grid2";
 
 export default function GenreCard({ title, img }) {
   const { filterBooks, books } = useBooks();
+  const navigate = useNavigate();
 
   useEffect(() => {
     filterBooks(title);
   }, [title]);
+
+  const handleClick = (id) => {
+    navigate(`/detail/${id}`);
+  };
 
   return (
     <Card sx={{ minWidth: 275 }}>
@@ -32,7 +39,14 @@ export default function GenreCard({ title, img }) {
       </CardContent>
       <Grid container spacing={2} padding={2}>
         {books.slice(0, 4).map((book, index) => (
-          <Grid item xs sm={6} md={3} key={index}>
+          <Grid
+            xs
+            sm={6}
+            md={3}
+            key={index}
+            sx={{ cursor: "pointer" }}
+            onClick={() => handleClick(book.id)}
+          >
             <Box
               component="img"
               sx={{

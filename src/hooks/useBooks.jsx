@@ -16,8 +16,11 @@ const useBooks = () => {
   const obtData = async () => {
     const booksCollection = collection(db, "books");
     try {
-      const query = await getDocs(booksCollection);
-      const data = query.docs.map((doc) => doc.data());
+      const querySnapshot = await getDocs(booksCollection);
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setBooks(data);
     } catch (error) {
       console.error("Error al obtener datos de Firestore:", error);
@@ -26,9 +29,16 @@ const useBooks = () => {
 
   const detailBook = async (bookID) => {
     try {
-      const book = doc(db, "books", `${bookID}`);
-      const docSnap = await getDoc(book);
-      setSpBook(docSnap.data());
+      const bookRef = doc(db, "books", bookID);
+      const docSnap = await getDoc(bookRef);
+      if (docSnap.exists()) {
+        setSpBook({
+          id: docSnap.id,
+          ...docSnap.data(),
+        });
+      } else {
+        console.error("No such document!");
+      }
     } catch (error) {
       console.error("Error al obtener datos de Firestore:", error);
     }
@@ -36,11 +46,17 @@ const useBooks = () => {
 
   const filterBooks = async (filter) => {
     try {
-      const books = collection(db, "books");
-      const q = query(books, where("genre", "array-contains", filter));
-
-      const responseDb = await getDocs(q);
-      setBooks(responseDb.docs.map((doc) => doc.data()));
+      const booksCollection = collection(db, "books");
+      const q = query(
+        booksCollection,
+        where("genre", "array-contains", filter)
+      );
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setBooks(data);
     } catch (error) {
       console.error("Error al obtener datos de Firestore:", error);
     }
