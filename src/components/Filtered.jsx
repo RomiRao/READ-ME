@@ -1,24 +1,31 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useBooks from "../hooks/useBooks";
+
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import useBooks from "../hooks/useBooks";
 
 //Slider price value
 function valuetext(value) {
   return `${value}°C`;
 }
-
 const minDistance = 10;
 
+//COMPONENT
 function Filtered() {
   const { obtData, books } = useBooks();
+  const navigate = useNavigate();
 
   useEffect(() => {
     obtData();
   }, []);
+
+  const handleClick = (id) => {
+    navigate(`/detail/${id}`);
+  };
 
   //Slider price function
   const [value1, setValue1] = useState([0, 1000]);
@@ -80,16 +87,18 @@ function Filtered() {
           <Typography>Cargando</Typography>
         ) : (
           books.map((book) => (
-            <Grid xs={3} padding={3}>
+            <Grid key={book.id} xs={3} padding={3}>
               <Box
                 component="img"
                 sx={{
                   maxWidth: "200px",
                   maxHeight: "250px",
                   boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
+                  cursor: "pointer",
                 }}
                 alt={`${book.name}`}
                 src={`${book.cover}`}
+                onClick={() => handleClick(book.id)}
               />
             </Grid>
           ))
