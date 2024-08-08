@@ -7,6 +7,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { RotatingLines } from "react-loader-spinner";
 
 //Slider price value
 function valuetext(value) {
@@ -84,7 +85,19 @@ function Filtered() {
       {/* Books display */}
       <Grid xs={9} container spacing={3}>
         {books.length === 0 ? (
-          <Typography>Cargando</Typography>
+          <Box>
+            <RotatingLines
+              visible={true}
+              height="50"
+              width="50"
+              color="grey"
+              strokeWidth="5"
+              animationDuration="0.75"
+              ariaLabel="rotating-lines-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+            />
+          </Box>
         ) : (
           books.map((book) => (
             <Grid key={book.id} xs={3} padding={3}>
