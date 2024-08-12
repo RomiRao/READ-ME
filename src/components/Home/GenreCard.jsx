@@ -18,8 +18,12 @@ export default function GenreCard({ title, img }) {
     filterBooks(title);
   }, [title]);
 
-  const handleClick = (id) => {
+  const handleDetailClick = (id) => {
     navigate(`/detail/${id}`);
+  };
+
+  const handleGenreClick = (genre) => {
+    navigate(`/Search?genre=${genre}`);
   };
 
   return (
@@ -32,9 +36,11 @@ export default function GenreCard({ title, img }) {
           component="img"
           sx={{
             width: "100%",
+            cursor: "pointer",
           }}
           alt="Section cover"
           src={img}
+          onClick={() => handleGenreClick(title)}
         />
       </CardContent>
       <Grid container spacing={2} padding={2}>
@@ -45,7 +51,7 @@ export default function GenreCard({ title, img }) {
             md={3}
             key={index}
             sx={{ cursor: "pointer" }}
-            onClick={() => handleClick(book.id)}
+            onClick={() => handleDetailClick(book.id)}
           >
             <Box
               component="img"

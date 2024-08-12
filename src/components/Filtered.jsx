@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -11,18 +11,31 @@ import { RotatingLines } from "react-loader-spinner";
 const valuetext = (value) => `${value}$`;
 
 function Filtered() {
-  const { obtData, books } = useBooks();
+  const { obtData, books, genres } = useBooks();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [filters, setFilters] = useState({
     category: [],
     genre: [],
     price: [0, 1000],
-    new: null, // Cambiado a null para que puedas tener un valor booleano o ninguno
+    new: null,
   });
 
   useEffect(() => {
     obtData().catch((error) => console.error("Error loading books:", error));
   }, [filters]);
+
+  useEffect(() => {
+    // Parse the URL query parameters
+    const query = new URLSearchParams(location.search);
+    const genreParam = query.get("genre");
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      genre: genreParam ? [genreParam] : [],
+    }));
+  }, [location.search]);
 
   const handleClick = (id) => {
     navigate(`/detail/${id}`);
@@ -32,10 +45,9 @@ function Filtered() {
     const { name, value, checked } = event.target;
 
     if (name === "new") {
-      // Manejo especial para el estado booleano
       setFilters((prevFilters) => ({
         ...prevFilters,
-        new: checked ? value === "true" : null, // Ajusta el valor booleano o elimina el filtro
+        new: checked ? value === "true" : null,
       }));
     } else {
       setFilters((prevFilters) => {
@@ -44,7 +56,6 @@ function Filtered() {
           ? [...currentValues, value]
           : currentValues.filter((item) => item !== value);
 
-        console.log(`Updating filters - ${name}: ${newValues}`);
         return { ...prevFilters, [name]: newValues };
       });
     }
@@ -66,6 +77,7 @@ function Filtered() {
     const matchesPrice =
       book.price >= filters.price[0] && book.price <= filters.price[1];
     const matchesState = filters.new === null || book.new === filters.new;
+
     return matchesCategory && matchesGenre && matchesPrice && matchesState;
   });
 
@@ -102,39 +114,20 @@ function Filtered() {
         </FormGroup>
         <FormGroup sx={{ marginBottom: 5 }}>
           <Typography variant="h6">By genre</Typography>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="genre"
-                value="Action"
-                checked={filters.genre.includes("Action")}
-                onChange={handleFilterChange}
-              />
-            }
-            label="Action"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="genre"
-                value="Adventure"
-                checked={filters.genre.includes("Adventure")}
-                onChange={handleFilterChange}
-              />
-            }
-            label="Adventure"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="genre"
-                value="Horror"
-                checked={filters.genre.includes("Horror")}
-                onChange={handleFilterChange}
-              />
-            }
-            label="Horror"
-          />
+          {genres.map((genre) => (
+            <FormControlLabel
+              key={genre}
+              control={
+                <Checkbox
+                  name="genre"
+                  value={genre}
+                  checked={filters.genre.includes(genre)}
+                  onChange={handleFilterChange}
+                />
+              }
+              label={genre}
+            />
+          ))}
         </FormGroup>
         <FormGroup sx={{ marginBottom: 5 }}>
           <Typography variant="h6">By price</Typography>
