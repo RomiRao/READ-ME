@@ -21,6 +21,7 @@ import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import { Avatar, ListItemAvatar, ListItemText } from "@mui/material";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -69,6 +70,7 @@ function Navbar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
 
   const { filterBooks, books } = useBooks();
@@ -77,22 +79,27 @@ function Navbar() {
     if (input.trim() !== "") {
       filterBooks("name", input);
     } else {
-      setSuggestions([]); // Si el input está vacío, no mostramos sugerencias
+      setSuggestions([]);
     }
   }, [input, filterBooks]);
 
   useEffect(() => {
     if (books.length > 0) {
-      setSuggestions(books.slice(0, 5)); // Mostrar solo las primeras 5 coincidencias
+      setSuggestions(books.slice(0, 5));
     }
   }, [books]);
 
   const handleInputChange = (event) => {
-    setInput(event.target.value); // Actualizar estado del input
+    setInput(event.target.value);
+  };
+
+  const handleInputFocus = () => {
+    setIsFocused(true);
   };
 
   const handleClickAway = () => {
-    setSuggestions([]); // Ocultar las sugerencias cuando se hace clic fuera
+    setSuggestions([]);
+    setIsFocused(false);
   };
 
   const isMenuOpen = Boolean(anchorEl);
@@ -194,18 +201,19 @@ function Navbar() {
             READ ME
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-              value={input}
-              onChange={handleInputChange}
-            />
-            {suggestions.length > 0 && (
-              <ClickAwayListener onClickAway={handleClickAway}>
+          <ClickAwayListener onClickAway={handleClickAway}>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={input}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+              />
+              {isFocused && suggestions.length > 0 && (
                 <Paper
                   sx={{
                     position: "absolute",
@@ -224,14 +232,17 @@ function Navbar() {
                         button
                         onClick={() => navigate(`/detail/${book.id}`)}
                       >
-                        {book.name}
+                        <ListItemAvatar>
+                          <Avatar alt="book cover" src={`${book.cover}`} />
+                        </ListItemAvatar>
+                        <ListItemText>{book.name}</ListItemText>
                       </ListItem>
                     ))}
                   </List>
                 </Paper>
-              </ClickAwayListener>
-            )}
-          </Search>
+              )}
+            </Search>
+          </ClickAwayListener>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
               size="large"
