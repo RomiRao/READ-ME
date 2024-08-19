@@ -15,7 +15,7 @@ export default function GenreCard({ title, img }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    filterBooks(title);
+    filterBooks("genre", title);
   }, [title]);
 
   const handleDetailClick = (id) => {

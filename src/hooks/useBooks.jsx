@@ -17,14 +17,13 @@ const useBooks = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const booksCollection = collection(db, "books"); // Usa db para la colección
+        const booksCollection = collection(db, "books");
         const snapshot = await getDocs(booksCollection);
         const booksData = snapshot.docs.map((doc) => doc.data());
         setBooks(booksData);
 
-        // Extraer géneros únicos
         const allGenres = booksData.flatMap((book) => book.genre);
-        const uniqueGenres = [...new Set(allGenres)]; // Elimina duplicados
+        const uniqueGenres = [...new Set(allGenres)];
         setGenres(uniqueGenres);
       } catch (error) {
         console.error("Error fetching books:", error);
@@ -65,19 +64,45 @@ const useBooks = () => {
     }
   };
 
-  const filterBooks = async (filter) => {
+  const filterBooks = async (filterType, filterValue) => {
     try {
       const booksCollection = collection(db, "books");
-      const q = query(
-        booksCollection,
-        where("genre", "array-contains", filter)
-      );
-      const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setBooks(data);
+      let q;
+
+      if (filterType === "genre") {
+        // Filtrar por género, que es un array en cada documento
+        q = query(
+          booksCollection,
+          where("genre", "array-contains", filterValue)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setBooks(data);
+      } else if (filterType === "name") {
+        // Filtrar por nombre, insensible a mayúsculas/minúsculas, y que contenga el valor
+        const snapshot = await getDocs(booksCollection);
+        const data = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((book) =>
+            book.name.toLowerCase().includes(filterValue.toLowerCase())
+          );
+        setBooks(data);
+      } else {
+        // Si no se especifica ningún filtro válido, trae todos los libros
+        const querySnapshot = await getDocs(booksCollection);
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setBooks(data);
+      }
     } catch (error) {
       console.error("Error al obtener datos de Firestore:", error);
     }

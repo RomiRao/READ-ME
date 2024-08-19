@@ -1,4 +1,6 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
+import useBooks from "../hooks/useBooks";
+
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -9,6 +11,10 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Paper from "@mui/material/Paper";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
@@ -46,7 +52,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     [theme.breakpoints.up("sm")]: {
@@ -59,8 +64,34 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function Navbar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [input, setInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+  const { filterBooks, books } = useBooks();
+
+  useEffect(() => {
+    if (input.trim() !== "") {
+      filterBooks("name", input);
+    } else {
+      setSuggestions([]); // Si el input está vacío, no mostramos sugerencias
+    }
+  }, [input, filterBooks]);
+
+  useEffect(() => {
+    if (books.length > 0) {
+      setSuggestions(books.slice(0, 5)); // Mostrar solo las primeras 5 coincidencias
+    }
+  }, [books]);
+
+  const handleInputChange = (event) => {
+    setInput(event.target.value); // Actualizar estado del input
+  };
+
+  const handleClickAway = () => {
+    setSuggestions([]); // Ocultar las sugerencias cuando se hace clic fuera
+  };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -168,7 +199,32 @@ function Navbar() {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
+              value={input}
+              onChange={handleInputChange}
             />
+            {suggestions.length > 0 && (
+              <ClickAwayListener onClickAway={handleClickAway}>
+                <Paper
+                  sx={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                  }}
+                >
+                  <List>
+                    {suggestions.map((book) => (
+                      <ListItem key={book.id} button>
+                        {book.name}
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              </ClickAwayListener>
+            )}
           </Search>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
