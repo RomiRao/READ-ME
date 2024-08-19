@@ -1,4 +1,7 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
+import useBooks from "../hooks/useBooks";
+import { useNavigate } from "react-router-dom";
+
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -9,11 +12,16 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Paper from "@mui/material/Paper";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import { Avatar, ListItemAvatar, ListItemText } from "@mui/material";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -46,7 +54,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     [theme.breakpoints.up("sm")]: {
@@ -59,8 +66,41 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function Navbar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [input, setInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
+  const navigate = useNavigate();
+
+  const { filterBooks, books } = useBooks();
+
+  useEffect(() => {
+    if (input.trim() !== "") {
+      filterBooks("name", input);
+    } else {
+      setSuggestions([]);
+    }
+  }, [input, filterBooks]);
+
+  useEffect(() => {
+    if (books.length > 0) {
+      setSuggestions(books.slice(0, 5));
+    }
+  }, [books]);
+
+  const handleInputChange = (event) => {
+    setInput(event.target.value);
+  };
+
+  const handleInputFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleClickAway = () => {
+    setSuggestions([]);
+    setIsFocused(false);
+  };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -156,20 +196,54 @@ function Navbar() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: "none", sm: "block" }, cursor: "pointer" }}
+            onClick={() => navigate("/")}
           >
             READ ME
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+          <ClickAwayListener onClickAway={handleClickAway}>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={input}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+              />
+              {isFocused && suggestions.length > 0 && (
+                <Paper
+                  sx={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                  }}
+                >
+                  <List>
+                    {suggestions.map((book) => (
+                      <ListItem
+                        key={book.id}
+                        button
+                        onClick={() => navigate(`/detail/${book.id}`)}
+                      >
+                        <ListItemAvatar>
+                          <Avatar alt="book cover" src={`${book.cover}`} />
+                        </ListItemAvatar>
+                        <ListItemText>{book.name}</ListItemText>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              )}
+            </Search>
+          </ClickAwayListener>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
               size="large"

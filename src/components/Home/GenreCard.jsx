@@ -1,4 +1,7 @@
-import * as React from "react";
+import { useEffect } from "react";
+import useBooks from "../../hooks/useBooks";
+import { useNavigate } from "react-router-dom";
+
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 
@@ -7,63 +10,60 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 
-export default function GenreCard() {
+export default function GenreCard({ title, img }) {
+  const { filterBooks, books } = useBooks();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    filterBooks("genre", title);
+  }, [title]);
+
+  const handleDetailClick = (id) => {
+    navigate(`/detail/${id}`);
+  };
+
+  const handleGenreClick = (genre) => {
+    navigate(`/Search?genre=${genre}`);
+  };
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent sx={{ padding: 0 }}>
         <Typography variant="h5" component="div" padding={2}>
-          Fantasy
+          {title}
         </Typography>
         <Box
           component="img"
           sx={{
             width: "100%",
+            cursor: "pointer",
           }}
-          alt="The house from the offer."
-          src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
+          alt="Section cover"
+          src={img}
+          onClick={() => handleGenreClick(title)}
         />
       </CardContent>
       <Grid container spacing={2} padding={2}>
-        <Grid xs>
-          <Box
-            component="img"
-            sx={{
-              width: "100%",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs>
-          <Box
-            component="img"
-            sx={{
-              width: "100%",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs>
-          <Box
-            component="img"
-            sx={{
-              width: "100%",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
-        <Grid xs>
-          <Box
-            component="img"
-            sx={{
-              width: "100%",
-            }}
-            alt="The house from the offer."
-            src="https://acdn.mitiendanube.com/stores/399/159/products/onepiece011-778bcfffc7d1f6acd115684066763694-640-0.jpg"
-          />
-        </Grid>
+        {books.slice(0, 4).map((book, index) => (
+          <Grid
+            xs
+            sm={6}
+            md={3}
+            key={index}
+            sx={{ cursor: "pointer" }}
+            onClick={() => handleDetailClick(book.id)}
+          >
+            <Box
+              component="img"
+              sx={{
+                width: "100%",
+                height: 130,
+              }}
+              alt={book.name}
+              src={book.cover}
+            />
+          </Grid>
+        ))}
       </Grid>
     </Card>
   );

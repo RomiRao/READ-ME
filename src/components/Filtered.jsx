@@ -1,101 +1,228 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import useBooks from "../hooks/useBooks";
+import Navbar from "./Navbar";
+
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import useBooks from "../hooks/useBooks";
+import { RotatingLines } from "react-loader-spinner";
 
-//Slider price value
-function valuetext(value) {
-  return `${value}°C`;
-}
-
-const minDistance = 10;
+const valuetext = (value) => `${value}$`;
 
 function Filtered() {
-  const { obtData, books } = useBooks();
+  const { obtData, books, genres } = useBooks();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [filters, setFilters] = useState({
+    category: [],
+    genre: [],
+    price: [0, 1000],
+    new: null,
+  });
 
   useEffect(() => {
-    obtData();
-  }, []);
+    obtData().catch((error) => console.error("Error loading books:", error));
+  }, [filters]);
 
-  //Slider price function
-  const [value1, setValue1] = useState([0, 1000]);
+  useEffect(() => {
+    // Parse the URL query parameters
+    const query = new URLSearchParams(location.search);
+    const genreParam = query.get("genre");
 
-  const handleChange1 = (event, newValue, activeThumb) => {
-    if (!Array.isArray(newValue)) {
-      return;
-    }
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      genre: genreParam ? [genreParam] : [],
+    }));
+  }, [location.search]);
 
-    if (activeThumb === 0) {
-      setValue1([Math.min(newValue[0], value1[1] - minDistance), value1[1]]);
+  const handleClick = (id) => {
+    navigate(`/detail/${id}`);
+  };
+
+  const handleFilterChange = (event) => {
+    const { name, value, checked } = event.target;
+
+    if (name === "new") {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        new: checked ? value === "true" : null,
+      }));
     } else {
-      setValue1([value1[0], Math.max(newValue[1], value1[0] + minDistance)]);
+      setFilters((prevFilters) => {
+        const currentValues = prevFilters[name];
+        const newValues = checked
+          ? [...currentValues, value]
+          : currentValues.filter((item) => item !== value);
+
+        return { ...prevFilters, [name]: newValues };
+      });
     }
   };
 
-  return (
-    <Grid container>
-      <Grid xs={3}>
-        <Typography variant="h4" sx={{ marginBottom: 5 }}>
-          Filters
-        </Typography>
-        <FormGroup sx={{ marginBottom: 5 }}>
-          <Typography variant="h6">By type</Typography>
-          <FormControlLabel control={<Checkbox />} label="Libros" />
-          <FormControlLabel control={<Checkbox />} label="Audiolibros" />
-          <FormControlLabel control={<Checkbox />} label="Mangas" />
-        </FormGroup>
-        <FormGroup sx={{ marginBottom: 5 }}>
-          <Typography variant="h6">By genre</Typography>
-          <FormControlLabel control={<Checkbox />} label="Accion" />
-          <FormControlLabel control={<Checkbox />} label="Aventura" />
-          <FormControlLabel control={<Checkbox />} label="Terror" />
-        </FormGroup>
-        <FormGroup sx={{ marginBottom: 5 }}>
-          <Typography variant="h6">By price</Typography>
-          <Slider
-            getAriaLabel={() => "Minimum distance"}
-            value={value1}
-            onChange={handleChange1}
-            valueLabelDisplay="auto"
-            getAriaValueText={valuetext}
-            disableSwap
-            max={1000}
-            sx={{ maxWidth: "200px" }}
-          />
-        </FormGroup>
-        <FormGroup variant="h6" sx={{ marginBottom: 5 }}>
-          <Typography>By state</Typography>
-          <FormControlLabel control={<Checkbox />} label="Nuevo" />
-          <FormControlLabel control={<Checkbox />} label="Usado" />
-        </FormGroup>
-        <Button variant="contained">Search</Button>
-      </Grid>
+  const handlePriceChange = (event, newValue) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      price: newValue,
+    }));
+  };
 
-      {/* Books display */}
-      <Grid xs={9} container spacing={3}>
-        {books.length === 0 ? (
-          <Typography>Cargando</Typography>
-        ) : (
-          books.map((book) => (
-            <Grid xs={3} padding={3}>
-              <Box
-                component="img"
-                sx={{
-                  maxWidth: "200px",
-                  maxHeight: "250px",
-                  boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
-                }}
-                alt={`${book.name}`}
-                src={`${book.cover}`}
+  const filteredBooks = books.filter((book) => {
+    const matchesCategory =
+      filters.category.length === 0 || filters.category.includes(book.category);
+    const matchesGenre =
+      filters.genre.length === 0 ||
+      filters.genre.some((g) => book.genre.includes(g));
+    const matchesPrice =
+      book.price >= filters.price[0] && book.price <= filters.price[1];
+    const matchesState = filters.new === null || book.new === filters.new;
+
+    return matchesCategory && matchesGenre && matchesPrice && matchesState;
+  });
+
+  return (
+    <>
+      <Navbar />
+      <Box paddingY={5} paddingX={10}>
+        <Grid container>
+          <Grid xs={3}>
+            <Typography variant="h4" sx={{ marginBottom: 5 }}>
+              Filters
+            </Typography>
+            <FormGroup sx={{ marginBottom: 5 }}>
+              <Typography variant="h6">By category</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="category"
+                    value="Book"
+                    checked={filters.category.includes("Book")}
+                    onChange={handleFilterChange}
+                  />
+                }
+                label="Books"
               />
-            </Grid>
-          ))
-        )}
-      </Grid>
-    </Grid>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="category"
+                    value="Manga"
+                    checked={filters.category.includes("Manga")}
+                    onChange={handleFilterChange}
+                  />
+                }
+                label="Mangas"
+              />
+            </FormGroup>
+            <FormGroup sx={{ marginBottom: 5 }}>
+              <Typography variant="h6">By genre</Typography>
+              {genres.map((genre) => (
+                <FormControlLabel
+                  key={genre}
+                  control={
+                    <Checkbox
+                      name="genre"
+                      value={genre}
+                      checked={filters.genre.includes(genre)}
+                      onChange={handleFilterChange}
+                    />
+                  }
+                  label={genre}
+                />
+              ))}
+            </FormGroup>
+            <FormGroup sx={{ marginBottom: 5 }}>
+              <Typography variant="h6">By price</Typography>
+              <Slider
+                value={filters.price}
+                onChange={handlePriceChange}
+                valueLabelDisplay="auto"
+                getAriaValueText={valuetext}
+                disableSwap
+                max={1000}
+                sx={{ maxWidth: "200px" }}
+              />
+            </FormGroup>
+            <FormGroup variant="h6" sx={{ marginBottom: 5 }}>
+              <Typography>By state</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="new"
+                    value="true"
+                    checked={filters.new === true}
+                    onChange={handleFilterChange}
+                  />
+                }
+                label="New"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="new"
+                    value="false"
+                    checked={filters.new === false}
+                    onChange={handleFilterChange}
+                  />
+                }
+                label="Used"
+              />
+            </FormGroup>
+            <Button
+              onClick={() =>
+                setFilters({
+                  category: [],
+                  genre: [],
+                  price: [0, 1000],
+                  new: null,
+                })
+              }
+            >
+              Reset Filters
+            </Button>
+          </Grid>
+
+          <Grid xs={9} container spacing={3}>
+            {books.length === 0 ? (
+              <Box>
+                <RotatingLines
+                  visible={true}
+                  height="50"
+                  width="50"
+                  color="grey"
+                  strokeWidth="5"
+                  animationDuration="0.75"
+                  ariaLabel="rotating-lines-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                />
+                <Typography>Loading books...</Typography>
+              </Box>
+            ) : (
+              filteredBooks.map((book) => (
+                <Grid key={book.id} xs={3} padding={3}>
+                  <Box
+                    component="img"
+                    sx={{
+                      maxWidth: "200px",
+                      maxHeight: "250px",
+                      boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
+                      cursor: "pointer",
+                    }}
+                    alt={book.name}
+                    src={book.cover}
+                    onClick={() => handleClick(book.id)}
+                  />
+                </Grid>
+              ))
+            )}
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 }
 
