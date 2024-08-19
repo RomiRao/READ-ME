@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useBooks from "../hooks/useBooks";
+import { useNavigate } from "react-router-dom";
 
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -68,6 +69,7 @@ function Navbar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const navigate = useNavigate();
 
   const { filterBooks, books } = useBooks();
 
@@ -217,7 +219,11 @@ function Navbar() {
                 >
                   <List>
                     {suggestions.map((book) => (
-                      <ListItem key={book.id} button>
+                      <ListItem
+                        key={book.id}
+                        button
+                        onClick={() => navigate(`/detail/${book.id}`)}
+                      >
                         {book.name}
                       </ListItem>
                     ))}
