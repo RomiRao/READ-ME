@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
 import Navbar from "./Navbar";
+import { CartContext } from "../context/CartContext";
 
 import { Button, Container, Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
@@ -23,6 +24,7 @@ function createData(label, data) {
 function Detail() {
   const { spBook, detailBook } = useBooks();
   let { id } = useParams();
+  const { addItems } = useContext(CartContext);
 
   useEffect(() => {
     detailBook(id);
@@ -58,7 +60,11 @@ function Detail() {
                   alt={`${spBook.name} cover`}
                   src={spBook.cover}
                 />
-                <Button variant="contained" startIcon={<LocalMallIcon />}>
+                <Button
+                  variant="contained"
+                  startIcon={<LocalMallIcon />}
+                  onClick={(e) => addItems(e, spBook)}
+                >
                   ADD TO CART
                 </Button>
               </Grid>

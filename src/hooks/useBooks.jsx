@@ -70,7 +70,6 @@ const useBooks = () => {
       let q;
 
       if (filterType === "genre") {
-        // Filtrar por género, que es un array en cada documento
         q = query(
           booksCollection,
           where("genre", "array-contains", filterValue)
@@ -83,7 +82,6 @@ const useBooks = () => {
         }));
         setBooks(data);
       } else if (filterType === "name") {
-        // Filtrar por nombre, insensible a mayúsculas/minúsculas, y que contenga el valor
         const snapshot = await getDocs(booksCollection);
         const data = snapshot.docs
           .map((doc) => ({
@@ -95,7 +93,6 @@ const useBooks = () => {
           );
         setBooks(data);
       } else {
-        // Si no se especifica ningún filtro válido, trae todos los libros
         const querySnapshot = await getDocs(booksCollection);
         const data = querySnapshot.docs.map((doc) => ({
           id: doc.id,

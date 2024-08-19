@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import useBooks from "../hooks/useBooks";
 import { useNavigate } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
 
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -72,8 +73,10 @@ function Navbar() {
   const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
-
+  const { items } = useContext(CartContext);
+  const [cartContent, setCartContent] = useState(0);
   const { filterBooks, books } = useBooks();
+  const [isCartHovered, setIsCartHovered] = useState(false);
 
   useEffect(() => {
     if (input.trim() !== "") {
@@ -81,7 +84,9 @@ function Navbar() {
     } else {
       setSuggestions([]);
     }
-  }, [input, filterBooks]);
+
+    setCartContent(items.length);
+  }, [input, items]);
 
   useEffect(() => {
     if (books.length > 0) {
@@ -247,13 +252,46 @@ function Navbar() {
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
               size="large"
-              aria-label="show 17 new notifications"
+              aria-label="show notifications"
               color="inherit"
+              onMouseEnter={() => setIsCartHovered(true)}
+              onMouseLeave={() => setIsCartHovered(false)}
             >
-              <Badge badgeContent={17} color="error">
+              <Badge
+                badgeContent={cartContent !== 0 ? cartContent : null}
+                color="error"
+              >
                 <LocalMallIcon />
               </Badge>
             </IconButton>
+            {isCartHovered && cartContent > 0 && (
+              <Paper
+                sx={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  zIndex: 1,
+                  width: 300,
+                  maxHeight: 300,
+                  overflowY: "auto",
+                  padding: 2,
+                }}
+              >
+                <List>
+                  {items.map((item, index) => (
+                    <ListItem key={index}>
+                      <ListItemAvatar>
+                        <Avatar src={item.cover} alt={item.name} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={item.name}
+                        secondary={`Quantity: ${item.quantity}`}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            )}
             <IconButton
               size="large"
               edge="end"
