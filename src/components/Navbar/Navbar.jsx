@@ -284,10 +284,11 @@ const Navbar = () => {
                         <IconButton
                           size="small"
                           color="inherit"
-                          onClick={(e) => handleDeleteItem(e, item.id, true)}
+                          onClick={(e) => handleDeleteItem(e, item.id)}
                         >
                           <RemoveIcon />
                         </IconButton>
+                        <Typography>{item.quantity}</Typography>
                         <IconButton
                           size="small"
                           color="inherit"
@@ -298,7 +299,7 @@ const Navbar = () => {
                         <IconButton
                           size="small"
                           color="inherit"
-                          onClick={(e) => handleDeleteItem(e, item.id)}
+                          onClick={(e) => handleDeleteItem(e, item.id, true)}
                         >
                           <DeleteIcon />
                         </IconButton>

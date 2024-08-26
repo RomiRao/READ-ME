@@ -32,15 +32,16 @@ const CartContextProvider = ({ children }) => {
   const delItems = (e, id, removeAll = false) => {
     e.stopPropagation();
     setItems((prevItems) => {
-      const updatedItems = removeAll
-        ? prevItems.filter((item) => item.id !== id)
-        : prevItems
-            .map((item) =>
-              item.id === id && item.quantity > 1
-                ? { ...item, quantity: item.quantity - 1 }
-                : item
-            )
-            .filter((item) => item.id !== id || item.quantity > 0);
+      let updatedItems;
+      if (removeAll) {
+        updatedItems = prevItems.filter((item) => item.id !== id);
+      } else {
+        updatedItems = prevItems
+          .map((item) =>
+            item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+          )
+          .filter((item) => item.quantity > 0);
+      }
 
       set("cartItems", updatedItems);
       return updatedItems;
