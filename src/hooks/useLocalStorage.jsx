@@ -1,16 +1,22 @@
-export default function useLocalStorage() {
-  const get = (clave) => {
-    return JSON.parse(localStorage.getItem(`${clave}`));
+const useLocalStorage = () => {
+  const get = (key) => {
+    try {
+      return JSON.parse(localStorage.getItem(key));
+    } catch (e) {
+      console.error(`Error parsing localStorage item ${key}`, e);
+      return null;
+    }
   };
 
-  const set = (clave, pokes) => {
-    localStorage.setItem(`${clave}`, JSON.stringify(pokes));
+  const set = (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.error(`Error setting localStorage item ${key}`, e);
+    }
   };
 
-  const data = {
-    get,
-    set,
-  };
+  return { get, set };
+};
 
-  return data;
-}
+export default useLocalStorage;

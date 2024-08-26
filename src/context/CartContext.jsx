@@ -10,44 +10,41 @@ const CartContextProvider = ({ children }) => {
   useEffect(() => {
     const storedItems = get("cartItems");
     setItems(storedItems || []);
-  }, [get]);
+  }, []);
 
   const addItems = (e, book) => {
     e.stopPropagation();
-    const existingItem = items.find((item) => item.id === book.id);
-    let updatedItems;
+    setItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === book.id);
+      const updatedItems = existingItem
+        ? prevItems.map((item) =>
+            item.id === book.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...prevItems, { ...book, quantity: 1 }];
 
-    if (existingItem) {
-      updatedItems = items.map((item) =>
-        item.id === book.id ? { ...item, quantity: item.quantity + 1 } : item
-      );
-    } else {
-      updatedItems = [...items, { ...book, quantity: 1 }];
-    }
-
-    setItems(updatedItems);
-    set("cartItems", updatedItems);
+      set("cartItems", updatedItems);
+      return updatedItems;
+    });
   };
 
   const delItems = (e, id, removeAll = false) => {
     e.stopPropagation();
-    let updatedItems;
+    setItems((prevItems) => {
+      const updatedItems = removeAll
+        ? prevItems.filter((item) => item.id !== id)
+        : prevItems
+            .map((item) =>
+              item.id === id && item.quantity > 1
+                ? { ...item, quantity: item.quantity - 1 }
+                : item
+            )
+            .filter((item) => item.id !== id || item.quantity > 0);
 
-    if (removeAll) {
-      updatedItems = items.filter((item) => item.id !== id);
-    } else {
-      const existingItem = items.find((item) => item.id === id);
-      if (existingItem && existingItem.quantity > 1) {
-        updatedItems = items.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-        );
-      } else {
-        updatedItems = items.filter((item) => item.id !== id);
-      }
-    }
-
-    setItems(updatedItems);
-    set("cartItems", updatedItems);
+      set("cartItems", updatedItems);
+      return updatedItems;
+    });
   };
 
   const isItems = (id) => {
