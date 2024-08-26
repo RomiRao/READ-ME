@@ -1,7 +1,7 @@
 import { useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
-import Navbar from "./Navbar";
+import Navbar from "./Navbar/Navbar";
 import { CartContext } from "../context/CartContext";
 
 import { Button, Container, Grid, Typography } from "@mui/material";

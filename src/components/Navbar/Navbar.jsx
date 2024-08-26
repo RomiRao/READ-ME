@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
-import useBooks from "../hooks/useBooks";
+import useBooks from "../../hooks/useBooks";
 import { useNavigate } from "react-router-dom";
-import { CartContext } from "../context/CartContext";
+import { CartContext } from "../../context/CartContext";
 
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
