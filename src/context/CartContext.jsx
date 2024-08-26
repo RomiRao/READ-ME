@@ -8,8 +8,9 @@ const CartContextProvider = ({ children }) => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    get("cartItems") ? setItems(get("cartItems")) : setItems([]);
-  }, []);
+    const storedItems = get("cartItems");
+    setItems(storedItems || []);
+  }, [get]);
 
   const addItems = (e, book) => {
     e.stopPropagation();
@@ -28,17 +29,21 @@ const CartContextProvider = ({ children }) => {
     set("cartItems", updatedItems);
   };
 
-  const delItems = (e, id) => {
+  const delItems = (e, id, removeAll = false) => {
     e.stopPropagation();
-    const existingItem = items.find((item) => item.id === id);
     let updatedItems;
 
-    if (existingItem && existingItem.quantity > 1) {
-      updatedItems = items.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-      );
-    } else {
+    if (removeAll) {
       updatedItems = items.filter((item) => item.id !== id);
+    } else {
+      const existingItem = items.find((item) => item.id === id);
+      if (existingItem && existingItem.quantity > 1) {
+        updatedItems = items.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        );
+      } else {
+        updatedItems = items.filter((item) => item.id !== id);
+      }
     }
 
     setItems(updatedItems);

@@ -18,11 +18,15 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 
+// ICONS
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Avatar, ListItemAvatar, ListItemText } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -73,8 +77,7 @@ function Navbar() {
   const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
-  const { items } = useContext(CartContext);
-  const [cartContent, setCartContent] = useState(0);
+  const { items, addItems, delItems } = useContext(CartContext);
   const { filterBooks, books } = useBooks();
   const [isCartHovered, setIsCartHovered] = useState(false);
 
@@ -84,9 +87,7 @@ function Navbar() {
     } else {
       setSuggestions([]);
     }
-
-    setCartContent(items.length);
-  }, [input, items]);
+  }, [input, filterBooks]);
 
   useEffect(() => {
     if (books.length > 0) {
@@ -125,6 +126,16 @@ function Navbar() {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleAddItem = (e, book) => {
+    e.stopPropagation();
+    addItems(e, book);
+  };
+
+  const handleDeleteItem = (e, id, removeAll = false) => {
+    e.stopPropagation();
+    delItems(e, id, removeAll);
   };
 
   const menuId = "primary-search-account-menu";
@@ -169,10 +180,10 @@ function Navbar() {
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
+          aria-label="show notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={items.length} color="error">
             <LocalMallIcon />
           </Badge>
         </IconButton>
@@ -250,48 +261,83 @@ function Navbar() {
             </Search>
           </ClickAwayListener>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="show notifications"
-              color="inherit"
+            <Box
+              sx={{ position: "relative" }}
               onMouseEnter={() => setIsCartHovered(true)}
               onMouseLeave={() => setIsCartHovered(false)}
             >
-              <Badge
-                badgeContent={cartContent !== 0 ? cartContent : null}
-                color="error"
+              <IconButton
+                size="large"
+                aria-label="show notifications"
+                color="inherit"
               >
-                <LocalMallIcon />
-              </Badge>
-            </IconButton>
-            {isCartHovered && cartContent > 0 && (
-              <Paper
-                sx={{
-                  position: "absolute",
-                  top: "100%",
-                  right: 0,
-                  zIndex: 1,
-                  width: 300,
-                  maxHeight: 300,
-                  overflowY: "auto",
-                  padding: 2,
-                }}
-              >
-                <List>
-                  {items.map((item, index) => (
-                    <ListItem key={index}>
-                      <ListItemAvatar>
-                        <Avatar src={item.cover} alt={item.name} />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={item.name}
-                        secondary={`Quantity: ${item.quantity}`}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </Paper>
-            )}
+                <Badge
+                  badgeContent={items.length !== 0 ? items.length : null}
+                  color="error"
+                >
+                  <LocalMallIcon />
+                </Badge>
+              </IconButton>
+              {isCartHovered && items.length > 0 && (
+                <Paper
+                  sx={{
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    zIndex: 1,
+                    width: 300,
+                    maxHeight: 300,
+                    overflowY: "auto",
+                    padding: 2,
+                  }}
+                  onMouseEnter={() => setIsCartHovered(true)}
+                  onMouseLeave={() => setIsCartHovered(false)}
+                >
+                  <List>
+                    {items.map((item) => (
+                      <ListItem key={item.id}>
+                        <ListItemAvatar>
+                          <Avatar src={item.cover} alt={item.name} />
+                        </ListItemAvatar>
+                        <Box>
+                          <ListItemText primary={item.name} />
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            borderRadius={5}
+                            sx={{
+                              bgcolor: "#5399DE",
+                              color: "white",
+                              height: "30px",
+                              maxWidth: "90px",
+                            }}
+                          >
+                            <IconButton
+                              onClick={(e) => handleDeleteItem(e, item.id)}
+                            >
+                              <RemoveIcon />
+                            </IconButton>
+                            <Typography>{`${item.quantity}`}</Typography>
+                            <IconButton onClick={(e) => handleAddItem(e, item)}>
+                              <AddIcon />
+                            </IconButton>
+                          </Box>
+                        </Box>
+                        <IconButton
+                          size="large"
+                          edge="end"
+                          color="inherit"
+                          sx={{ alignSelf: "end" }}
+                          onClick={(e) => handleDeleteItem(e, item.id, true)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              )}
+            </Box>
             <IconButton
               size="large"
               edge="end"
