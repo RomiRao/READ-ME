@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
-import Navbar from "./Navbar";
+import Navbar from "./Navbar/Navbar";
 
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";

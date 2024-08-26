@@ -4,7 +4,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Box, Typography } from "@mui/material";
 import GenreCard from "./GenreCard";
 import Grid from "@mui/material/Unstable_Grid2";
-import Navbar from "../Navbar";
+import Navbar from "../Navbar/Navbar";
 
 function Home() {
   return (
