@@ -36,11 +36,11 @@ const CartContextProvider = ({ children }) => {
       if (removeAll) {
         updatedItems = prevItems.filter((item) => item.id !== id);
       } else {
-        updatedItems = prevItems
-          .map((item) =>
-            item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-          )
-          .filter((item) => item.quantity > 0);
+        updatedItems = prevItems.map((item) =>
+          item.id === id
+            ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
+            : item
+        );
       }
 
       set("cartItems", updatedItems);
