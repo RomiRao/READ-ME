@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { CartContext } from "../../context/CartContext";
 import { Box, Container } from "@mui/system";
 import {
@@ -21,8 +21,8 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
-  const { items, addItems, delItems } = useContext(CartContext);
-  const [shipping, setShipping] = useState("Standar Delivery - $5");
+  const { items, addItems, delItems, shipping, setShipping } =
+    useContext(CartContext);
   const navigate = useNavigate();
 
   // Calculate total price of items
@@ -50,6 +50,8 @@ export default function CartPage() {
     e.stopPropagation();
     delItems(e, id, removeAll);
   };
+
+  console.log(shipping);
 
   return (
     <Container

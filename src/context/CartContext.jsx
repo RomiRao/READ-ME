@@ -6,6 +6,7 @@ export const CartContext = createContext();
 const CartContextProvider = ({ children }) => {
   const { get, set } = useLocalStorage();
   const [items, setItems] = useState([]);
+  const [shipping, setShipping] = useState("Standar Delivery - $5");
 
   useEffect(() => {
     const storedItems = get("cartItems");
@@ -57,6 +58,8 @@ const CartContextProvider = ({ children }) => {
     addItems,
     delItems,
     isItems,
+    shipping,
+    setShipping,
   };
 
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;
