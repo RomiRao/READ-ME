@@ -7,6 +7,8 @@ import {
   doc,
   updateDoc,
   increment,
+  orderBy, // Importa orderBy para ordenar los libros por el atributo sold
+  limit, // Importa limit para limitar el número de libros devueltos
 } from "firebase/firestore";
 import db from "../../firestore.config";
 import { useEffect, useState } from "react";
@@ -17,6 +19,7 @@ const useBooks = () => {
   const [genres, setGenres] = useState([]);
   const [spBook, setSpBook] = useState({});
   const [filteredBooks, setFilteredBooks] = useState([]);
+  const [topSellingBooks, setTopSellingBooks] = useState([]); // Nueva variable de estado
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -28,7 +31,7 @@ const useBooks = () => {
           ...doc.data(),
         }));
         setBooks(booksData);
-        setFilteredBooks(booksData); // Initialize filteredBooks with all books
+        setFilteredBooks(booksData); // Inicializa filteredBooks con todos los libros
 
         const allGenres = booksData.flatMap((book) => book.genre);
         const uniqueGenres = [...new Set(allGenres)];
@@ -39,6 +42,25 @@ const useBooks = () => {
     };
 
     fetchBooks();
+  }, []);
+
+  const getTopSellingBooks = async () => {
+    try {
+      const booksCollection = collection(db, "books");
+      const q = query(booksCollection, orderBy("sold", "desc"), limit(8));
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTopSellingBooks(data);
+    } catch (error) {
+      console.error("Error fetching top-selling books:", error);
+    }
+  };
+
+  useEffect(() => {
+    getTopSellingBooks(); // Llama a getTopSellingBooks para cargar los libros más vendidos al montar el componente
   }, []);
 
   const updateBooks = async (items) => {
@@ -78,7 +100,6 @@ const useBooks = () => {
   const filterBooks = async (filterType, filterValue) => {
     try {
       if (filterType === "genre") {
-        // Filter by genre in Firestore
         const booksCollection = collection(db, "books");
         const q = query(
           booksCollection,
@@ -91,14 +112,12 @@ const useBooks = () => {
         }));
         setFilteredBooks(data);
       } else if (filterType === "name") {
-        // Perform case-insensitive search for book names
         const lowerCaseFilterValue = filterValue.toLowerCase();
         const filtered = books.filter((book) =>
           book.name.toLowerCase().includes(lowerCaseFilterValue)
         );
         setFilteredBooks(filtered);
       } else {
-        // Reset to all books if no filter
         setFilteredBooks(books);
       }
     } catch (error) {
@@ -114,6 +133,7 @@ const useBooks = () => {
     genres,
     updateBooks,
     loading,
+    topSellingBooks,
   };
 };
 
