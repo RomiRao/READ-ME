@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   collection,
   getDocs,
@@ -6,10 +5,14 @@ import {
   where,
   getDoc,
   doc,
+  updateDoc,
+  increment,
 } from "firebase/firestore";
 import db from "../../firestore.config";
+import { useEffect, useState } from "react";
 
 const useBooks = () => {
+  const [loading, setLoading] = useState(false);
   const [books, setBooks] = useState([]);
   const [genres, setGenres] = useState([]);
   const [spBook, setSpBook] = useState({});
@@ -37,6 +40,23 @@ const useBooks = () => {
 
     fetchBooks();
   }, []);
+
+  const updateBooks = async (items) => {
+    setLoading(true);
+    try {
+      await Promise.all(
+        items.map((item) =>
+          updateDoc(doc(db, "books", item.id), {
+            sold: increment(item.quantity),
+          })
+        )
+      );
+    } catch (error) {
+      console.error("Error updating documents:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const detailBook = async (bookID) => {
     try {
@@ -86,7 +106,15 @@ const useBooks = () => {
     }
   };
 
-  return { books: filteredBooks, detailBook, spBook, filterBooks, genres };
+  return {
+    books: filteredBooks,
+    detailBook,
+    spBook,
+    filterBooks,
+    genres,
+    updateBooks,
+    loading,
+  };
 };
 
 export default useBooks;

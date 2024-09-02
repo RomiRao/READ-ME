@@ -1,4 +1,7 @@
 import * as React from "react";
+import useBooks from "../../hooks/useBooks";
+import { CartContext } from "../../context/CartContext";
+
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -18,7 +21,6 @@ import {
   ListItemAvatar,
   ListItemText,
 } from "@mui/material";
-import { CartContext } from "../../context/CartContext";
 
 const steps = ["Shipping Information", "Payment Details"];
 
@@ -64,9 +66,22 @@ export default function CheckoutPage() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleNext = () => {
+  const { updateBooks } = useBooks(); // Agrega esto para utilizar la función de actualización
+
+  const handleNext = async () => {
     if (validateForm()) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      if (activeStep === steps.length - 1) {
+        // Solo en el último paso, al hacer clic en "Finish", se actualizan los libros
+        try {
+          await updateBooks(items); // Actualiza los libros solo al finalizar
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } catch (error) {
+          console.error("Error updating documents:", error);
+        }
+      } else {
+        // Avanza al siguiente paso sin actualizar
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
     } else {
       setOpenModal(true);
     }
