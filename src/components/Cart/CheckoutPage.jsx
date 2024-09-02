@@ -25,7 +25,8 @@ import {
 const steps = ["Shipping Information", "Payment Details"];
 
 export default function CheckoutPage() {
-  const { items, grandTotal, shippingCost } = React.useContext(CartContext);
+  const { items, grandTotal, shippingCost, clearCart } =
+    React.useContext(CartContext);
   const [activeStep, setActiveStep] = React.useState(0);
   const [shippingData, setShippingData] = React.useState({
     email: "",
@@ -73,6 +74,7 @@ export default function CheckoutPage() {
       if (activeStep === steps.length - 1) {
         try {
           await updateBooks(items);
+          clearCart();
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         } catch (error) {
           console.error("Error updating documents:", error);

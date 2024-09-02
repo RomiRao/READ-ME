@@ -85,7 +85,7 @@ const CartContextProvider = ({ children }) => {
     grandTotal,
     totalPrice,
     shippingCost,
-    clearCart, // Expose clearCart in the context data
+    clearCart,
   };
 
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;
