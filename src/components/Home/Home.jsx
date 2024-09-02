@@ -61,19 +61,19 @@ function Home() {
 
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2} padding={4}>
-              {topSellingBooks.map((book, index) => (
+              {topSellingBooks.map((book) => (
                 <Grid xs={12} sm={6} md={3} key={book.id}>
                   <Box
-                    component="img"
                     sx={{
-                      maxWidth: "270px",
+                      backgroundImage: `url(${book.cover})`,
+                      backgroundPosition: "top",
+                      backgroundSize: "cover",
                       width: "100%",
+                      height: "460px",
                       cursor: "pointer",
                     }}
-                    alt={book.name}
-                    src={book.cover}
                     onClick={() => handleDetailClick(book.id)}
-                  />
+                  ></Box>
                 </Grid>
               ))}
             </Grid>
