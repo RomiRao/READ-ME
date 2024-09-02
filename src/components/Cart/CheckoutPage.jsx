@@ -11,10 +11,19 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from "@mui/material";
+import { CartContext } from "../../context/CartContext";
 
 const steps = ["Shipping Information", "Payment Details"];
 
 export default function CheckoutPage() {
+  const { items } = React.useContext(CartContext);
   const [activeStep, setActiveStep] = React.useState(0);
   const [shippingData, setShippingData] = React.useState({
     email: "",
@@ -43,9 +52,11 @@ export default function CheckoutPage() {
       if (!shippingData.city) errors.city = "Required";
       if (!shippingData.number) errors.number = "Required";
     } else if (activeStep === 1) {
-      if (!paymentData.cardNumber) errors.cardNumber = "Required";
+      if (!paymentData.cardNumber || paymentData.cardNumber.length !== 19)
+        errors.cardNumber = "Card number must be 16 digits";
       if (!paymentData.expiryDate) errors.expiryDate = "Required";
-      if (!paymentData.cvv) errors.cvv = "Required";
+      if (!paymentData.cvv || paymentData.cvv.length !== 3)
+        errors.cvv = "CVV must be 3 digits";
       if (!paymentData.cardholderName) errors.cardholderName = "Required";
     }
 
@@ -73,6 +84,23 @@ export default function CheckoutPage() {
     setOpenModal(false);
   };
 
+  const formatCardNumber = (value) => {
+    const cleaned = value.replace(/\D+/g, "");
+    return cleaned.match(/.{1,4}/g)?.join(" ") || "";
+  };
+
+  // Calculate shipping date
+  const today = new Date();
+  const estimatedArrivalDate = new Date(today);
+  estimatedArrivalDate.setDate(today.getDate() + 10);
+
+  // Format date
+  const formattedDate = estimatedArrivalDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <Container sx={{ width: "100%", paddingY: 10 }}>
       <Stepper activeStep={activeStep} sx={{ paddingX: 5 }}>
@@ -84,13 +112,25 @@ export default function CheckoutPage() {
       </Stepper>
       {activeStep === steps.length ? (
         <React.Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>
-            All steps completed - you&apos;re finished
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-            <Box sx={{ flex: "1 1 auto" }} />
-            <Button onClick={handleReset}>Reset</Button>
+          <Box textAlign="center" paddingY={8}>
+            <Typography sx={{ mt: 2, mb: 1 }}>
+              Your shipping is on the way!
+            </Typography>
+            <Typography>Estimated day of arrival: {formattedDate}</Typography>
           </Box>
+          <Typography>Products</Typography>
+          <List>
+            {items.map((item) => (
+              <ListItem key={item.id}>
+                <ListItemAvatar>
+                  <Avatar alt="book cover" src={`${item.cover}`} />
+                </ListItemAvatar>
+                <ListItemText>{item.name}</ListItemText>
+
+                <Typography>{item.quantity}</Typography>
+              </ListItem>
+            ))}
+          </List>
         </React.Fragment>
       ) : (
         <React.Fragment>
@@ -164,10 +204,11 @@ export default function CheckoutPage() {
                 helperText={errors.city}
               />
               <TextField
-                label="Número"
+                required
+                label="ID"
                 variant="outlined"
                 inputProps={{
-                  inputMode: "numeric", // Sugiere el teclado numérico en móviles
+                  inputMode: "numeric",
                 }}
                 value={shippingData.number}
                 onChange={(e) =>
@@ -198,13 +239,19 @@ export default function CheckoutPage() {
                 required
                 id="card-number"
                 label="Card Number"
-                type="number"
+                type="text"
                 value={paymentData.cardNumber}
                 onChange={(e) =>
-                  setPaymentData({ ...paymentData, cardNumber: e.target.value })
+                  setPaymentData({
+                    ...paymentData,
+                    cardNumber: formatCardNumber(e.target.value),
+                  })
                 }
                 error={!!errors.cardNumber}
                 helperText={errors.cardNumber}
+                inputProps={{
+                  maxLength: 19,
+                }}
               />
               <TextField
                 required
@@ -222,13 +269,19 @@ export default function CheckoutPage() {
                 required
                 id="cvv"
                 label="CVV"
-                type="number"
+                type="text"
                 value={paymentData.cvv}
-                onChange={(e) =>
-                  setPaymentData({ ...paymentData, cvv: e.target.value })
-                }
+                onChange={(e) => {
+                  const newValue = e.target.value
+                    .replace(/[^0-9]/g, "")
+                    .slice(0, 3);
+                  setPaymentData({ ...paymentData, cvv: newValue });
+                }}
                 error={!!errors.cvv}
                 helperText={errors.cvv}
+                inputProps={{
+                  maxLength: 3,
+                }}
               />
               <TextField
                 required
