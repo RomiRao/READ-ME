@@ -7,8 +7,8 @@ import {
   doc,
   updateDoc,
   increment,
-  orderBy, // Importa orderBy para ordenar los libros por el atributo sold
-  limit, // Importa limit para limitar el número de libros devueltos
+  orderBy,
+  limit,
 } from "firebase/firestore";
 import db from "../../firestore.config";
 import { useEffect, useState } from "react";
@@ -19,28 +19,28 @@ const useBooks = () => {
   const [genres, setGenres] = useState([]);
   const [spBook, setSpBook] = useState({});
   const [filteredBooks, setFilteredBooks] = useState([]);
-  const [topSellingBooks, setTopSellingBooks] = useState([]); // Nueva variable de estado
+  const [topSellingBooks, setTopSellingBooks] = useState([]);
+
+  const fetchBooks = async () => {
+    try {
+      const booksCollection = collection(db, "books");
+      const snapshot = await getDocs(booksCollection);
+      const booksData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setBooks(booksData);
+      setFilteredBooks(booksData);
+
+      const allGenres = booksData.flatMap((book) => book.genre);
+      const uniqueGenres = [...new Set(allGenres)];
+      setGenres(uniqueGenres);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const booksCollection = collection(db, "books");
-        const snapshot = await getDocs(booksCollection);
-        const booksData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setBooks(booksData);
-        setFilteredBooks(booksData); // Inicializa filteredBooks con todos los libros
-
-        const allGenres = booksData.flatMap((book) => book.genre);
-        const uniqueGenres = [...new Set(allGenres)];
-        setGenres(uniqueGenres);
-      } catch (error) {
-        console.error("Error fetching books:", error);
-      }
-    };
-
     fetchBooks();
   }, []);
 
@@ -60,7 +60,7 @@ const useBooks = () => {
   };
 
   useEffect(() => {
-    getTopSellingBooks(); // Llama a getTopSellingBooks para cargar los libros más vendidos al montar el componente
+    getTopSellingBooks();
   }, []);
 
   const updateBooks = async (items) => {
@@ -134,6 +134,7 @@ const useBooks = () => {
     updateBooks,
     loading,
     topSellingBooks,
+    fetchBooks, // Export the fetchBooks function
   };
 };
 

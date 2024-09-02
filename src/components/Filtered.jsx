@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
 import Navbar from "./Navbar/Navbar";
-
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormGroup from "@mui/material/FormGroup";
@@ -13,7 +12,7 @@ import { RotatingLines } from "react-loader-spinner";
 const valuetext = (value) => `${value}$`;
 
 function Filtered() {
-  const { obtData, books, genres } = useBooks();
+  const { fetchBooks, books, genres } = useBooks(); // Usar fetchBooks en lugar de obtData
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,11 +24,10 @@ function Filtered() {
   });
 
   useEffect(() => {
-    obtData().catch((error) => console.error("Error loading books:", error));
-  }, [filters]);
+    fetchBooks().catch((error) => console.error("Error loading books:", error));
+  }, [filters, fetchBooks]); // Añadir fetchBooks a las dependencias
 
   useEffect(() => {
-    // Parse the URL query parameters
     const query = new URLSearchParams(location.search);
     const genreParam = query.get("genre");
 
@@ -196,8 +194,6 @@ function Filtered() {
                   strokeWidth="5"
                   animationDuration="0.75"
                   ariaLabel="rotating-lines-loading"
-                  wrapperStyle={{}}
-                  wrapperClass=""
                 />
                 <Typography>Loading books...</Typography>
               </Box>

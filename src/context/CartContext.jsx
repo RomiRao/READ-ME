@@ -6,7 +6,13 @@ export const CartContext = createContext();
 const CartContextProvider = ({ children }) => {
   const { get, set } = useLocalStorage();
   const [items, setItems] = useState([]);
-  const [shipping, setShipping] = useState("Standar Delivery - $5");
+  const [shipping, setShipping] = useState("Standard Delivery - $5");
+
+  // Clear the cart by resetting items
+  const clearCart = () => {
+    setItems([]);
+    set("cartItems", []); // Clear cart items from local storage as well
+  };
 
   // Calculate total price of items
   const totalPrice = items.reduce(
@@ -20,11 +26,13 @@ const CartContextProvider = ({ children }) => {
   // Calculate the grand total
   const grandTotal = totalPrice + shippingCost;
 
+  // Load items from local storage when component mounts
   useEffect(() => {
     const storedItems = get("cartItems");
     setItems(storedItems || []);
-  }, []);
+  }, []); // The empty dependency array ensures this only runs once on mount
 
+  // Function to add items to the cart
   const addItems = (e, book) => {
     e.stopPropagation();
     setItems((prevItems) => {
@@ -37,11 +45,12 @@ const CartContextProvider = ({ children }) => {
           )
         : [...prevItems, { ...book, quantity: 1 }];
 
-      set("cartItems", updatedItems);
+      set("cartItems", updatedItems); // Update local storage
       return updatedItems;
     });
   };
 
+  // Function to remove items from the cart
   const delItems = (e, id, removeAll = false) => {
     e.stopPropagation();
     setItems((prevItems) => {
@@ -56,11 +65,12 @@ const CartContextProvider = ({ children }) => {
         );
       }
 
-      set("cartItems", updatedItems);
+      set("cartItems", updatedItems); // Update local storage
       return updatedItems;
     });
   };
 
+  // Function to check if an item is in the cart
   const isItems = (id) => {
     return items.some((item) => item.id === id);
   };
@@ -75,6 +85,7 @@ const CartContextProvider = ({ children }) => {
     grandTotal,
     totalPrice,
     shippingCost,
+    clearCart, // Expose clearCart in the context data
   };
 
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;
