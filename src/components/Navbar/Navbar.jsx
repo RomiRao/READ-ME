@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import useBooks from "../hooks/useBooks";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { CartContext } from "../../context/CartContext";
+import useBooks from "../../hooks/useBooks";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -16,13 +16,16 @@ import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
-
+import { Avatar, ListItemAvatar, ListItemText } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { Avatar, ListItemAvatar, ListItemText } from "@mui/material";
 
+// Styled components
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -65,45 +68,47 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-function Navbar() {
+const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
-
+  const { items, addItems, delItems } = useContext(CartContext);
   const { filterBooks, books } = useBooks();
+  const [isCartHovered, setIsCartHovered] = useState(false);
 
+  // Update suggestions based on input
   useEffect(() => {
     if (input.trim() !== "") {
       filterBooks("name", input);
     } else {
       setSuggestions([]);
     }
-  }, [input, filterBooks]);
+  }, [input]);
 
+  // Update suggestions based on filtered books
   useEffect(() => {
-    if (books.length > 0) {
+    if (input.trim() !== "") {
       setSuggestions(books.slice(0, 5));
+    } else {
+      setSuggestions([]);
     }
-  }, [books]);
+  }, [books, input]);
 
-  const handleInputChange = (event) => {
+  const handleInputChange = useCallback((event) => {
     setInput(event.target.value);
-  };
+  }, []);
 
-  const handleInputFocus = () => {
+  const handleInputFocus = useCallback(() => {
     setIsFocused(true);
-  };
+  }, []);
 
-  const handleClickAway = () => {
+  const handleClickAway = useCallback(() => {
     setSuggestions([]);
     setIsFocused(false);
-  };
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  }, []);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -122,20 +127,26 @@ function Navbar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const menuId = "primary-search-account-menu";
+  const handleAddItem = (e, book) => {
+    e.stopPropagation();
+    addItems(e, book);
+  };
+
+  const handleDeleteItem = (e, id, removeAll = false) => {
+    e.stopPropagation();
+    delItems(e, id, removeAll);
+  };
+
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id="primary-search-account-menu"
       keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
@@ -144,30 +155,23 @@ function Navbar() {
     </Menu>
   );
 
-  const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      id="primary-search-account-menu-mobile"
       keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
+          aria-label="show notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={items.length} color="error">
             <LocalMallIcon />
           </Badge>
         </IconButton>
@@ -214,7 +218,7 @@ function Navbar() {
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
               />
-              {isFocused && suggestions.length > 0 && (
+              {isFocused && input.trim() !== "" && suggestions.length > 0 && (
                 <Paper
                   sx={{
                     position: "absolute",
@@ -230,7 +234,6 @@ function Navbar() {
                     {suggestions.map((book) => (
                       <ListItem
                         key={book.id}
-                        button
                         onClick={() => navigate(`/detail/${book.id}`)}
                       >
                         <ListItemAvatar>
@@ -245,32 +248,73 @@ function Navbar() {
             </Search>
           </ClickAwayListener>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
+            <Box
+              sx={{ position: "relative" }}
+              onMouseEnter={() => setIsCartHovered(true)}
+              onMouseLeave={() => setIsCartHovered(false)}
             >
-              <Badge badgeContent={17} color="error">
-                <LocalMallIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+              <IconButton
+                size="large"
+                aria-label="show notifications"
+                color="inherit"
+              >
+                <Badge badgeContent={items.length || null} color="error">
+                  <LocalMallIcon />
+                </Badge>
+              </IconButton>
+              {isCartHovered && items.length > 0 && (
+                <Paper
+                  sx={{
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    width: "300px",
+                    zIndex: 1,
+                    maxHeight: "400px",
+                    overflowY: "auto",
+                  }}
+                >
+                  <List>
+                    {items.map((item) => (
+                      <ListItem key={item.id}>
+                        <ListItemAvatar>
+                          <Avatar alt="book cover" src={`${item.cover}`} />
+                        </ListItemAvatar>
+                        <ListItemText>{item.name}</ListItemText>
+                        <IconButton
+                          size="small"
+                          color="inherit"
+                          onClick={(e) => handleDeleteItem(e, item.id)}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                        <Typography>{item.quantity}</Typography>
+                        <IconButton
+                          size="small"
+                          color="inherit"
+                          onClick={(e) => handleAddItem(e, item)}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="inherit"
+                          onClick={(e) => handleDeleteItem(e, item.id, true)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              )}
+            </Box>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="show more"
-              aria-controls={mobileMenuId}
+              aria-controls="primary-search-account-menu-mobile"
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
               color="inherit"
@@ -284,6 +328,6 @@ function Navbar() {
       {renderMenu}
     </Box>
   );
-}
+};
 
 export default Navbar;
