@@ -66,20 +66,18 @@ export default function CheckoutPage() {
     return Object.keys(errors).length === 0;
   };
 
-  const { updateBooks } = useBooks(); // Agrega esto para utilizar la función de actualización
+  const { updateBooks } = useBooks();
 
   const handleNext = async () => {
     if (validateForm()) {
       if (activeStep === steps.length - 1) {
-        // Solo en el último paso, al hacer clic en "Finish", se actualizan los libros
         try {
-          await updateBooks(items); // Actualiza los libros solo al finalizar
+          await updateBooks(items);
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         } catch (error) {
           console.error("Error updating documents:", error);
         }
       } else {
-        // Avanza al siguiente paso sin actualizar
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
     } else {
