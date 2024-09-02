@@ -8,6 +8,18 @@ const CartContextProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [shipping, setShipping] = useState("Standar Delivery - $5");
 
+  // Calculate total price of items
+  const totalPrice = items.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  // Extract shipping cost from the selected shipping option
+  const shippingCost = parseInt(shipping.split("$")[1]);
+
+  // Calculate the grand total
+  const grandTotal = totalPrice + shippingCost;
+
   useEffect(() => {
     const storedItems = get("cartItems");
     setItems(storedItems || []);
@@ -60,6 +72,9 @@ const CartContextProvider = ({ children }) => {
     isItems,
     shipping,
     setShipping,
+    grandTotal,
+    totalPrice,
+    shippingCost,
   };
 
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;

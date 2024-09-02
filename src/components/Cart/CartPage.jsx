@@ -21,21 +21,16 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
-  const { items, addItems, delItems, shipping, setShipping } =
-    useContext(CartContext);
+  const {
+    items,
+    addItems,
+    delItems,
+    shipping,
+    setShipping,
+    grandTotal,
+    totalPrice,
+  } = useContext(CartContext);
   const navigate = useNavigate();
-
-  // Calculate total price of items
-  const totalPrice = items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  // Extract shipping cost from the selected shipping option
-  const shippingCost = parseInt(shipping.split("$")[1]);
-
-  // Calculate the grand total
-  const grandTotal = totalPrice + shippingCost;
 
   const handleChange = (event) => {
     setShipping(event.target.value);
@@ -50,8 +45,6 @@ export default function CartPage() {
     e.stopPropagation();
     delItems(e, id, removeAll);
   };
-
-  console.log(shipping);
 
   return (
     <Container
