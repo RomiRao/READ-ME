@@ -20,20 +20,20 @@ function Home() {
   return (
     <>
       <Navbar />
+      <Carousel
+        emulateTouch
+        swipeable
+        autoPlay
+        infiniteLoop
+        interval={3000}
+        showThumbs={false}
+        showArrows
+        showStatus={false}
+      >
+        <PromotionCard />
+        <PromotionCard />
+      </Carousel>
       <Box paddingY={5} paddingX={10}>
-        <Carousel
-          emulateTouch
-          swipeable
-          autoPlay
-          infiniteLoop
-          interval={3000}
-          showThumbs={false}
-          showArrows
-          showStatus={false}
-        >
-          <PromotionCard />
-          <PromotionCard />
-        </Carousel>
         <Grid container spacing={3} marginY={4}>
           <Grid xs>
             <GenreCard

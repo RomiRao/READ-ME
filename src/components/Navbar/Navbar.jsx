@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
 import useBooks from "../../hooks/useBooks";
@@ -24,6 +24,7 @@ import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 // Styled components
 const Search = styled("div")(({ theme }) => ({
@@ -195,7 +196,7 @@ const Navbar = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
-        <Toolbar>
+        <Toolbar sx={{ backgroundColor: "#3F6059" }}>
           <Typography
             variant="h6"
             noWrap
@@ -207,9 +208,9 @@ const Navbar = () => {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <ClickAwayListener onClickAway={handleClickAway}>
-            <Search>
+            <Search sx={{ backgroundColor: "white", color: "#444444" }}>
               <SearchIconWrapper>
-                <SearchIcon />
+                <SearchIcon sx={{ color: "#3F6059" }} />
               </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search…"
@@ -256,10 +257,10 @@ const Navbar = () => {
               <IconButton
                 size="large"
                 aria-label="show notifications"
-                color="inherit"
+                sx={{ backgroundColor: "white" }}
               >
                 <Badge badgeContent={items.length || null} color="error">
-                  <LocalMallIcon />
+                  <ShoppingCartIcon sx={{ color: "#3F6059" }} />
                 </Badge>
               </IconButton>
               {isCartHovered && items.length > 0 && (
