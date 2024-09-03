@@ -199,19 +199,29 @@ function Filtered() {
               </Box>
             ) : (
               filteredBooks.map((book) => (
-                <Grid key={book.id} xs={3} padding={3}>
+                <Grid
+                  key={book.id}
+                  xs={3}
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                >
                   <Box
                     component="img"
                     sx={{
-                      maxWidth: "200px",
+                      maxWidth: "170px",
                       maxHeight: "250px",
                       boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
                       cursor: "pointer",
+                      marginBottom: 2,
                     }}
                     alt={book.name}
                     src={book.cover}
                     onClick={() => handleClick(book.id)}
                   />
+                  <Typography variant="caption">{book.author}</Typography>
+                  <Typography>{book.name}</Typography>
+                  <Button>Add to cart</Button>
                 </Grid>
               ))
             )}
