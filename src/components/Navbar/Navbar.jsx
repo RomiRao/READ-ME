@@ -23,6 +23,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
 
 // Styled components
 const Search = styled("div")(({ theme }) => ({
@@ -157,6 +158,7 @@ const Navbar = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
         <Toolbar sx={{ backgroundColor: "#3F6059" }}>
+          <AutoStoriesRoundedIcon sx={{ marginRight: 2 }} />
           <Typography
             variant="h6"
             noWrap
