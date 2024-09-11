@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
+import { CartContext } from "../context/CartContext";
+
 import Navbar from "./Navbar/Navbar";
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -16,6 +18,7 @@ function Filtered() {
   const { fetchBooks, books, genres } = useBooks(); // Usar fetchBooks en lugar de obtData
   const navigate = useNavigate();
   const location = useLocation();
+  const { addItems } = useContext(CartContext);
 
   const [filters, setFilters] = useState({
     category: [],
@@ -245,7 +248,7 @@ function Filtered() {
                     variant="contained"
                     startIcon={<LocalMallIcon />}
                     sx={{ backgroundColor: "#3F6059" }}
-                    // onClick={(e) => addItems(e, spBook)}
+                    onClick={(e) => addItems(e, book)}
                   >
                     ADD TO CART
                   </Button>
