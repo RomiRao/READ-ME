@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-
 import useBooks from "../../hooks/useBooks";
+
 import { Carousel } from "react-responsive-carousel";
 import PromotionCard from "./PromotionCard";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -8,6 +8,8 @@ import { Box, Typography } from "@mui/material";
 import GenreCard from "./GenreCard";
 import Grid from "@mui/material/Unstable_Grid2";
 import Navbar from "../Navbar/Navbar";
+
+import image from "../../assets/promotion/Frame_37.png";
 
 function Home() {
   const { topSellingBooks } = useBooks();
@@ -30,8 +32,8 @@ function Home() {
         showArrows
         showStatus={false}
       >
-        <PromotionCard />
-        <PromotionCard />
+        <PromotionCard img={image} />
+        <PromotionCard img={image} />
       </Carousel>
       <Box paddingY={5} paddingX={10}>
         <Grid container spacing={3} marginY={4}>

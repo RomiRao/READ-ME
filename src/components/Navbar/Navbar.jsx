@@ -156,7 +156,7 @@ const Navbar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky">
+      <AppBar position="sticky" sx={{ boxShadow: "none" }}>
         <Toolbar sx={{ backgroundColor: "#3F6059" }}>
           <AutoStoriesRoundedIcon sx={{ marginRight: 2 }} />
           <Typography
