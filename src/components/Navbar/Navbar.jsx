@@ -221,6 +221,7 @@ const Navbar = () => {
                 size="large"
                 aria-label="show notifications"
                 disableRipple
+                onClick={() => navigate(`/cart`)}
                 sx={{
                   backgroundColor: "white",
                   borderRadius: 1,
