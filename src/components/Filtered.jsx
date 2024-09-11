@@ -8,6 +8,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 const valuetext = (value) => `${value}$`;
 
@@ -84,7 +85,7 @@ function Filtered() {
   return (
     <>
       <Navbar />
-      <Box paddingY={5} paddingX={10}>
+      <Box paddingY={10} paddingX={10}>
         <Grid container>
           <Grid xs={3}>
             <Typography variant="h4" sx={{ marginBottom: 5 }}>
@@ -204,7 +205,9 @@ function Filtered() {
                   xs={3}
                   display="flex"
                   flexDirection="column"
-                  alignItems="center"
+                  paddingX={5}
+                  justifyContent="space-between"
+                  maxHeight="450px"
                 >
                   <Box
                     component="img"
@@ -214,14 +217,38 @@ function Filtered() {
                       boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
                       cursor: "pointer",
                       marginBottom: 2,
+                      alignSelf: "center",
                     }}
                     alt={book.name}
                     src={book.cover}
                     onClick={() => handleClick(book.id)}
                   />
-                  <Typography variant="caption">{book.author}</Typography>
+                  <Typography
+                    variant="caption"
+                    textAlign="center"
+                    marginBottom={1}
+                  >
+                    {book.author}
+                  </Typography>
                   <Typography>{book.name}</Typography>
-                  <Button>Add to cart</Button>
+                  <Typography
+                    sx={{
+                      alignSelf: "flex-end",
+                      marginBottom: 1,
+                      color: "#3F6059",
+                      fontWeight: 600,
+                    }}
+                  >
+                    ${book.price}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<LocalMallIcon />}
+                    sx={{ backgroundColor: "#3F6059" }}
+                    // onClick={(e) => addItems(e, spBook)}
+                  >
+                    ADD TO CART
+                  </Button>
                 </Grid>
               ))
             )}
