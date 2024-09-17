@@ -103,6 +103,18 @@ function Filtered() {
                     value="Book"
                     checked={filters.category.includes("Book")}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="Books"
@@ -114,6 +126,18 @@ function Filtered() {
                     value="Manga"
                     checked={filters.category.includes("Manga")}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="Mangas"
@@ -130,6 +154,18 @@ function Filtered() {
                       value={genre}
                       checked={filters.genre.includes(genre)}
                       onChange={handleFilterChange}
+                      sx={{
+                        color: "#3F6059", // Color of the checkbox border
+                        "&.Mui-checked": {
+                          color: "#3F6059", // Color of the checkbox when checked
+                        },
+                        "&:hover": {
+                          backgroundColor: "#e0f2f1", // Light background color on hover
+                        },
+                        "&.Mui-checked:hover": {
+                          backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                        },
+                      }}
                     />
                   }
                   label={genre}
@@ -145,7 +181,22 @@ function Filtered() {
                 getAriaValueText={valuetext}
                 disableSwap
                 max={1000}
-                sx={{ maxWidth: "200px" }}
+                sx={{
+                  maxWidth: "200px",
+                  "& .MuiSlider-thumb": {
+                    bgcolor: "#3F6059",
+                  },
+                  "& .MuiSlider-track": {
+                    bgcolor: "#3F6059",
+                  },
+                  "& .MuiSlider-rail": {
+                    bgcolor: "#3F6059",
+                  },
+                  "& .MuiSlider-valueLabel": {
+                    bgcolor: "#3F6059",
+                    color: "#fff",
+                  },
+                }}
               />
             </FormGroup>
             <FormGroup variant="h6" sx={{ marginBottom: 5 }}>
@@ -157,6 +208,18 @@ function Filtered() {
                     value="true"
                     checked={filters.new === true}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="New"
@@ -168,12 +231,31 @@ function Filtered() {
                     value="false"
                     checked={filters.new === false}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="Used"
               />
             </FormGroup>
             <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#3F6059",
+                "&:hover": {
+                  backgroundColor: "#2c4946",
+                },
+              }}
               onClick={() =>
                 setFilters({
                   category: [],
