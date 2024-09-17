@@ -170,7 +170,15 @@ const Navbar = () => {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <ClickAwayListener onClickAway={handleClickAway}>
-            <Search sx={{ backgroundColor: "white", color: "#444444" }}>
+            <Search
+              sx={{
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "#EBEBEB",
+                },
+                color: "#444444",
+              }}
+            >
               <SearchIconWrapper>
                 <SearchIcon sx={{ color: "#3F6059" }} />
               </SearchIconWrapper>
@@ -228,10 +236,7 @@ const Navbar = () => {
                   width: 40,
                   height: 40,
                   "&:hover": {
-                    backgroundColor: "#3F6059",
-                    "& .MuiBadge-root .MuiSvgIcon-root": {
-                      color: "white",
-                    },
+                    backgroundColor: "#EBEBEB",
                   },
                 }}
               >

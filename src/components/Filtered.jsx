@@ -318,8 +318,7 @@ function Filtered() {
                   <Typography>{book.name}</Typography>
                   <Typography
                     sx={{
-                      alignSelf: "flex-end",
-                      marginBottom: 1,
+                      marginBottom: 2,
                       color: "#3F6059",
                       fontWeight: 600,
                     }}
