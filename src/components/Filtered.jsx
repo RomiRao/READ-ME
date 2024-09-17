@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useBooks from "../hooks/useBooks";
+import { CartContext } from "../context/CartContext";
+
 import Navbar from "./Navbar/Navbar";
 import { Box, Button, Slider, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -8,6 +10,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
 
 const valuetext = (value) => `${value}$`;
 
@@ -15,6 +18,7 @@ function Filtered() {
   const { fetchBooks, books, genres } = useBooks(); // Usar fetchBooks en lugar de obtData
   const navigate = useNavigate();
   const location = useLocation();
+  const { addItems } = useContext(CartContext);
 
   const [filters, setFilters] = useState({
     category: [],
@@ -84,7 +88,7 @@ function Filtered() {
   return (
     <>
       <Navbar />
-      <Box paddingY={5} paddingX={10}>
+      <Box paddingY={10} paddingX={10}>
         <Grid container>
           <Grid xs={3}>
             <Typography variant="h4" sx={{ marginBottom: 5 }}>
@@ -99,6 +103,18 @@ function Filtered() {
                     value="Book"
                     checked={filters.category.includes("Book")}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="Books"
@@ -110,6 +126,18 @@ function Filtered() {
                     value="Manga"
                     checked={filters.category.includes("Manga")}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="Mangas"
@@ -126,6 +154,18 @@ function Filtered() {
                       value={genre}
                       checked={filters.genre.includes(genre)}
                       onChange={handleFilterChange}
+                      sx={{
+                        color: "#3F6059", // Color of the checkbox border
+                        "&.Mui-checked": {
+                          color: "#3F6059", // Color of the checkbox when checked
+                        },
+                        "&:hover": {
+                          backgroundColor: "#e0f2f1", // Light background color on hover
+                        },
+                        "&.Mui-checked:hover": {
+                          backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                        },
+                      }}
                     />
                   }
                   label={genre}
@@ -141,7 +181,22 @@ function Filtered() {
                 getAriaValueText={valuetext}
                 disableSwap
                 max={1000}
-                sx={{ maxWidth: "200px" }}
+                sx={{
+                  maxWidth: "200px",
+                  "& .MuiSlider-thumb": {
+                    bgcolor: "#3F6059",
+                  },
+                  "& .MuiSlider-track": {
+                    bgcolor: "#3F6059",
+                  },
+                  "& .MuiSlider-rail": {
+                    bgcolor: "#3F6059",
+                  },
+                  "& .MuiSlider-valueLabel": {
+                    bgcolor: "#3F6059",
+                    color: "#fff",
+                  },
+                }}
               />
             </FormGroup>
             <FormGroup variant="h6" sx={{ marginBottom: 5 }}>
@@ -153,6 +208,18 @@ function Filtered() {
                     value="true"
                     checked={filters.new === true}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="New"
@@ -164,12 +231,31 @@ function Filtered() {
                     value="false"
                     checked={filters.new === false}
                     onChange={handleFilterChange}
+                    sx={{
+                      color: "#3F6059", // Color of the checkbox border
+                      "&.Mui-checked": {
+                        color: "#3F6059", // Color of the checkbox when checked
+                      },
+                      "&:hover": {
+                        backgroundColor: "#e0f2f1", // Light background color on hover
+                      },
+                      "&.Mui-checked:hover": {
+                        backgroundColor: "#c1e3e0", // Slightly darker hover color when checked
+                      },
+                    }}
                   />
                 }
                 label="Used"
               />
             </FormGroup>
             <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#3F6059",
+                "&:hover": {
+                  backgroundColor: "#2c4946",
+                },
+              }}
               onClick={() =>
                 setFilters({
                   category: [],
@@ -199,19 +285,59 @@ function Filtered() {
               </Box>
             ) : (
               filteredBooks.map((book) => (
-                <Grid key={book.id} xs={3} padding={3}>
+                <Grid
+                  key={book.id}
+                  xs={3}
+                  display="flex"
+                  flexDirection="column"
+                  paddingX={5}
+                  justifyContent="space-between"
+                  maxHeight="450px"
+                >
                   <Box
                     component="img"
                     sx={{
-                      maxWidth: "200px",
+                      maxWidth: "170px",
                       maxHeight: "250px",
                       boxShadow: "-3px 11px 16px -6px rgba(0,0,0,0.75)",
                       cursor: "pointer",
+                      marginBottom: 2,
+                      alignSelf: "center",
                     }}
                     alt={book.name}
                     src={book.cover}
                     onClick={() => handleClick(book.id)}
                   />
+                  <Typography
+                    variant="caption"
+                    textAlign="center"
+                    marginBottom={1}
+                  >
+                    {book.author}
+                  </Typography>
+                  <Typography>{book.name}</Typography>
+                  <Typography
+                    sx={{
+                      marginBottom: 2,
+                      color: "#3F6059",
+                      fontWeight: 600,
+                    }}
+                  >
+                    ${book.price}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<LocalMallIcon />}
+                    sx={{
+                      backgroundColor: "#3F6059",
+                      "&:hover": {
+                        backgroundColor: "#2c4946",
+                      },
+                    }}
+                    onClick={(e) => addItems(e, book)}
+                  >
+                    ADD TO CART
+                  </Button>
                 </Grid>
               ))
             )}

@@ -14,6 +14,7 @@ import {
   MenuItem,
   Select,
   Typography,
+  Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -49,69 +50,164 @@ export default function CartPage() {
   return (
     <Container
       sx={{
-        padding: 10,
+        padding: { xs: 2, md: 10 },
         marginY: 10,
-        border: "2px solid black",
+        borderRadius: 2,
+        boxShadow: "0px 0px 33px -4px rgba(0,0,0,0.15)",
+        backgroundColor: "#f9f9f9",
         display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        flexWrap: "wrap",
         gap: 4,
       }}
     >
-      <Box flex={2}>
-        <Typography variant="h4" gutterBottom>
-          Your cart
+      <Box
+        flex={2}
+        sx={{
+          padding: { xs: 2, sm: 4 },
+          backgroundColor: "#fff",
+          borderRadius: 2,
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          marginLeft={3}
+          sx={{ color: "#3F6059" }}
+        >
+          Your Cart
         </Typography>
         <List>
           {items.map((item) => (
-            <ListItem key={item.id} sx={{ height: 100, alignItems: "center" }}>
-              <ListItemAvatar>
-                <Avatar alt="book cover" src={`${item.cover}`} />
-              </ListItemAvatar>
-              <ListItemText primary={item.name} />
-              <IconButton
-                size="small"
-                color="inherit"
-                onClick={(e) => handleDeleteItem(e, item.id)}
-              >
-                <RemoveIcon />
-              </IconButton>
-              <Typography>{item.quantity}</Typography>
-              <IconButton
-                size="small"
-                color="inherit"
-                sx={{ marginRight: 2 }}
-                onClick={(e) => handleAddItem(e, item)}
-              >
-                <AddIcon />
-              </IconButton>
+            <ListItem
+              key={item.id}
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingY: { xs: 2, sm: 1 },
+                borderBottom: "1px solid #ddd",
+                "&:hover": {
+                  backgroundColor: "#f1f1f1",
+                },
+              }}
+            >
               <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="flex-end"
-                ml={2}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: { xs: "100%", sm: "auto" },
+                }}
               >
-                <Typography>${item.price.toFixed(2)}</Typography>
-                <Typography>
-                  ${(item.price * item.quantity).toFixed(2)}
-                </Typography>
+                <ListItemAvatar>
+                  <Avatar
+                    alt="book cover"
+                    src={`${item.cover}`}
+                    sx={{ width: 56, height: 56 }}
+                  />
+                </ListItemAvatar>
+
+                <ListItemText
+                  primaryTypographyProps={{
+                    noWrap: true,
+                    sx: {
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      maxWidth: { xs: "120px", md: "200px" },
+                      ml: 2,
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      color: "#333",
+                    },
+                  }}
+                  secondaryTypographyProps={{
+                    sx: {
+                      color: "#888",
+                      fontSize: "0.875rem",
+                      ml: 2,
+                    },
+                  }}
+                  primary={item.name}
+                  secondary={`Price: $${item.price.toFixed(2)}`}
+                />
               </Box>
-              <IconButton
-                size="small"
-                color="inherit"
-                sx={{ ml: 2 }}
-                onClick={(e) => handleDeleteItem(e, item.id, true)}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: { xs: "100%", sm: "auto" },
+                  mt: { xs: 2, sm: 0 },
+                }}
               >
-                <DeleteIcon />
-              </IconButton>
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  onClick={(e) => handleDeleteItem(e, item.id)}
+                  sx={{
+                    "&:hover": { color: "red" },
+                  }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+                <Typography>{item.quantity}</Typography>
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  onClick={(e) => handleAddItem(e, item)}
+                  sx={{ marginRight: 2 }}
+                >
+                  <AddIcon />
+                </IconButton>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    ml: { xs: 2, sm: 0 },
+                  }}
+                >
+                  <Typography>
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </Typography>
+                </Box>
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  onClick={(e) => handleDeleteItem(e, item.id, true)}
+                  sx={{
+                    "&:hover": { color: "red" },
+                    ml: 2,
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
             </ListItem>
           ))}
         </List>
       </Box>
-      <Box flex={1}>
-        <Typography variant="h5" gutterBottom>
+
+      {/* Order Summary */}
+      <Box
+        flex={1}
+        padding={3}
+        sx={{
+          backgroundColor: "#fff",
+          borderRadius: 2,
+          boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+          width: { xs: "100%", md: "auto" },
+        }}
+      >
+        <Typography variant="h5" gutterBottom sx={{ color: "#3F6059" }}>
           Order Summary
         </Typography>
+        <Divider sx={{ my: 2 }} />
         <Box display="flex" justifyContent="space-between" mb={2}>
-          <Typography>Items {items.length}</Typography>
+          <Typography>Items ({items.length})</Typography>
           <Typography>${totalPrice.toFixed(2)}</Typography>
         </Box>
         <InputLabel id="shipping-select" sx={{ marginBottom: 3 }}>
@@ -123,15 +219,17 @@ export default function CartPage() {
             id="shipping-select"
             value={shipping}
             onChange={handleChange}
+            sx={{ borderRadius: 2, backgroundColor: "#f0f0f0" }}
           >
-            <MenuItem value={"Standar Delivery - $5"}>
-              Standar Delivery - $5
+            <MenuItem value={"Standard Delivery - $5"}>
+              Standard Delivery - $5
             </MenuItem>
             <MenuItem value={"Delivery Express - $20"}>
               Delivery Express - $20
             </MenuItem>
           </Select>
         </FormControl>
+        <Divider sx={{ my: 2 }} />
         <Box display="flex" justifyContent="space-between" mt={2}>
           <Typography variant="h6">Total</Typography>
           <Typography variant="h6">${grandTotal.toFixed(2)}</Typography>
@@ -140,7 +238,14 @@ export default function CartPage() {
           variant="contained"
           fullWidth
           color="primary"
-          sx={{ mt: 2 }}
+          sx={{
+            mt: 3,
+            paddingY: 2,
+            backgroundColor: "#3F6059",
+            "&:hover": {
+              backgroundColor: "#2c4946",
+            },
+          }}
           onClick={() => navigate("/cart/checkout")}
         >
           Checkout

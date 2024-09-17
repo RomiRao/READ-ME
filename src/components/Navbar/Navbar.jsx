@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
 import useBooks from "../../hooks/useBooks";
@@ -20,10 +20,10 @@ import { Avatar, ListItemAvatar, ListItemText } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AutoStoriesRoundedIcon from "@mui/icons-material/AutoStoriesRounded";
 
 // Styled components
 const Search = styled("div")(({ theme }) => ({
@@ -69,7 +69,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -110,17 +109,8 @@ const Navbar = () => {
     setIsFocused(false);
   }, []);
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -137,23 +127,7 @@ const Navbar = () => {
     delItems(e, id, removeAll);
   };
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id="primary-search-account-menu"
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
 
   const renderMobileMenu = (
     <Menu
@@ -171,31 +145,20 @@ const Navbar = () => {
           aria-label="show notifications"
           color="inherit"
         >
-          <Badge badgeContent={items.length} color="error">
-            <LocalMallIcon />
+          <Badge badgeContent={items.length || null} color="error">
+            <ShoppingCartIcon />
           </Badge>
         </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
+        <p>Cart</p>
       </MenuItem>
     </Menu>
   );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky">
-        <Toolbar>
+      <AppBar position="sticky" sx={{ boxShadow: "none" }}>
+        <Toolbar sx={{ backgroundColor: "#3F6059" }}>
+          <AutoStoriesRoundedIcon sx={{ marginRight: 2 }} />
           <Typography
             variant="h6"
             noWrap
@@ -207,9 +170,17 @@ const Navbar = () => {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <ClickAwayListener onClickAway={handleClickAway}>
-            <Search>
+            <Search
+              sx={{
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "#EBEBEB",
+                },
+                color: "#444444",
+              }}
+            >
               <SearchIconWrapper>
-                <SearchIcon />
+                <SearchIcon sx={{ color: "#3F6059" }} />
               </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search…"
@@ -217,6 +188,7 @@ const Navbar = () => {
                 value={input}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
+                sx={{ height: "100%" }}
               />
               {isFocused && input.trim() !== "" && suggestions.length > 0 && (
                 <Paper
@@ -256,12 +228,23 @@ const Navbar = () => {
               <IconButton
                 size="large"
                 aria-label="show notifications"
-                color="inherit"
+                disableRipple
+                onClick={() => navigate(`/cart`)}
+                sx={{
+                  backgroundColor: "white",
+                  borderRadius: 1,
+                  width: 40,
+                  height: 40,
+                  "&:hover": {
+                    backgroundColor: "#EBEBEB",
+                  },
+                }}
               >
                 <Badge badgeContent={items.length || null} color="error">
-                  <LocalMallIcon />
+                  <ShoppingCartIcon sx={{ color: "#3F6059" }} />
                 </Badge>
               </IconButton>
+
               {isCartHovered && items.length > 0 && (
                 <Paper
                   sx={{
@@ -325,7 +308,6 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 };

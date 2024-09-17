@@ -31,6 +31,7 @@ function Detail() {
   }, [id, detailBook]);
 
   const rows = [
+    createData("Author", spBook.author),
     createData("Category", spBook.category),
     createData("Genres", spBook.genre ? spBook.genre.join(" ") : ""),
     createData("State", spBook.new ? "New" : "Used"),
@@ -63,6 +64,12 @@ function Detail() {
                 <Button
                   variant="contained"
                   startIcon={<LocalMallIcon />}
+                  sx={{
+                    backgroundColor: "#3F6059",
+                    "&:hover": {
+                      backgroundColor: "#2c4946",
+                    },
+                  }}
                   onClick={(e) => addItems(e, spBook)}
                 >
                   ADD TO CART
