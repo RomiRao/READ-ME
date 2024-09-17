@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-
 import CardContent from "@mui/material/CardContent";
-
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 
@@ -27,7 +25,7 @@ export default function GenreCard({ title, img }) {
   };
 
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{ width: "100%" }}>
       <CardContent sx={{ padding: 0 }}>
         <Typography variant="h5" component="div" padding={2}>
           {title}
@@ -37,16 +35,17 @@ export default function GenreCard({ title, img }) {
           sx={{
             width: "100%",
             cursor: "pointer",
+            height: { xs: 150, sm: 200, md: 250 },
           }}
           alt="Section cover"
           src={img}
           onClick={() => handleGenreClick(title)}
         />
       </CardContent>
-      <Grid container spacing={2} padding={2}>
+      <Grid container spacing={2} padding={2} flexWrap="nowrap">
         {books.slice(0, 4).map((book, index) => (
           <Grid
-            xs
+            xs={12}
             sm={6}
             md={3}
             key={index}
@@ -57,7 +56,7 @@ export default function GenreCard({ title, img }) {
               component="img"
               sx={{
                 width: "100%",
-                height: 130,
+                height: { xs: 100, md: 130 },
               }}
               alt={book.name}
               src={book.cover}
