@@ -11,6 +11,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import Footer from "./Footer";
 
 const valuetext = (value) => `${value}$`;
 
@@ -344,6 +345,7 @@ function Filtered() {
           </Grid>
         </Grid>
       </Box>
+      <Footer />
     </>
   );
 }
