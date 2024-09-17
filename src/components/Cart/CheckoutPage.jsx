@@ -1,7 +1,6 @@
 import * as React from "react";
 import useBooks from "../../hooks/useBooks";
 import { CartContext } from "../../context/CartContext";
-
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -9,7 +8,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import { Container } from "@mui/system";
+import { Container, Grid } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -44,6 +43,7 @@ export default function CheckoutPage() {
   });
   const [openModal, setOpenModal] = React.useState(false);
   const [errors, setErrors] = React.useState({});
+  const [orderSummary, setOrderSummary] = React.useState(null);
 
   const validateForm = () => {
     let errors = {};
@@ -75,6 +75,11 @@ export default function CheckoutPage() {
         try {
           await updateBooks(items);
           clearCart();
+          setOrderSummary({
+            items: items,
+            grandTotal: grandTotal,
+            shippingCost: shippingCost,
+          });
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         } catch (error) {
           console.error("Error updating documents:", error);
@@ -113,56 +118,91 @@ export default function CheckoutPage() {
   });
 
   return (
-    <Container sx={{ width: "100%", paddingY: 10 }}>
-      <Box display="flex" justifyContent="space-between">
-        <Box sx={{ width: "100%" }}>
-          <Stepper activeStep={activeStep} sx={{ paddingX: 5 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+    <Container
+      sx={{
+        width: "100%",
+        height: "100vh",
+        paddingY: 4,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Grid container spacing={4} justifyContent="center">
+        <Grid item xs={12} md={8}>
+          {activeStep < steps.length && (
+            <Stepper activeStep={activeStep} sx={{ paddingX: 1 }}>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          )}
           {activeStep === steps.length ? (
-            <React.Fragment>
-              <Box textAlign="center" paddingY={8}>
-                <Typography sx={{ mt: 2, mb: 1 }}>
-                  Your shipping is on the way!
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 4,
+                borderRadius: 2,
+                boxShadow: 3,
+                backgroundColor: "#ffffff",
+                width: "80%",
+                maxWidth: 600,
+                textAlign: "center",
+                height: "100%", // Ensure it takes up the available space
+              }}
+            >
+              <Typography variant="h4" gutterBottom mb={5}>
+                Your Order is Confirmed!
+              </Typography>
+              <Typography variant="h7" gutterBottom>
+                Thank you for your purchase. Your order is on the way!
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Estimated day of arrival: {formattedDate}
+              </Typography>
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" gutterBottom>
+                  Products
                 </Typography>
-                <Typography>
-                  Estimated day of arrival: {formattedDate}
+                <List sx={{ mb: 5 }}>
+                  {orderSummary?.items.map((item) => (
+                    <ListItem key={item.id}>
+                      <ListItemAvatar>
+                        <Avatar alt="book cover" src={`${item.cover}`} />
+                      </ListItemAvatar>
+                      <ListItemText primary={item.name} />
+                      <Typography>{item.quantity}</Typography>
+                    </ListItem>
+                  ))}
+                </List>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Shipping Cost: {orderSummary?.shippingCost}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Grand Total: {orderSummary?.grandTotal}
                 </Typography>
               </Box>
-              <Typography>Products</Typography>
-              <List>
-                {items.map((item) => (
-                  <ListItem key={item.id}>
-                    <ListItemAvatar>
-                      <Avatar alt="book cover" src={`${item.cover}`} />
-                    </ListItemAvatar>
-                    <ListItemText>{item.name}</ListItemText>
-
-                    <Typography>{item.quantity}</Typography>
-                  </ListItem>
-                ))}
-              </List>
-              <Typography>{grandTotal}</Typography>
-            </React.Fragment>
+            </Box>
           ) : (
-            <React.Fragment>
+            <Box
+              component="form"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                width: "100%",
+                mt: 2,
+              }}
+              noValidate
+              autoComplete="off"
+            >
               {activeStep === 0 && (
-                <Box
-                  component="form"
-                  sx={{
-                    mt: 2,
-                    mb: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
+                <>
                   <TextField
                     required
                     id="email"
@@ -248,21 +288,10 @@ export default function CheckoutPage() {
                     error={!!errors.number}
                     helperText={errors.number}
                   />
-                </Box>
+                </>
               )}
               {activeStep === 1 && (
-                <Box
-                  component="form"
-                  sx={{
-                    mt: 2,
-                    mb: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
+                <>
                   <TextField
                     required
                     id="card-number"
@@ -285,7 +314,7 @@ export default function CheckoutPage() {
                     required
                     id="expiry-date"
                     label="Expiry Date"
-                    type="month"
+                    type="text"
                     value={paymentData.expiryDate}
                     onChange={(e) =>
                       setPaymentData({
@@ -295,6 +324,9 @@ export default function CheckoutPage() {
                     }
                     error={!!errors.expiryDate}
                     helperText={errors.expiryDate}
+                    inputProps={{
+                      maxLength: 5,
+                    }}
                   />
                   <TextField
                     required
@@ -302,12 +334,12 @@ export default function CheckoutPage() {
                     label="CVV"
                     type="text"
                     value={paymentData.cvv}
-                    onChange={(e) => {
-                      const newValue = e.target.value
-                        .replace(/[^0-9]/g, "")
-                        .slice(0, 3);
-                      setPaymentData({ ...paymentData, cvv: newValue });
-                    }}
+                    onChange={(e) =>
+                      setPaymentData({
+                        ...paymentData,
+                        cvv: e.target.value,
+                      })
+                    }
                     error={!!errors.cvv}
                     helperText={errors.cvv}
                     inputProps={{
@@ -318,6 +350,7 @@ export default function CheckoutPage() {
                     required
                     id="cardholder-name"
                     label="Cardholder Name"
+                    type="text"
                     value={paymentData.cardholderName}
                     onChange={(e) =>
                       setPaymentData({
@@ -328,52 +361,63 @@ export default function CheckoutPage() {
                     error={!!errors.cardholderName}
                     helperText={errors.cardholderName}
                   />
-                </Box>
+                </>
               )}
-              <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Box display="flex" justifyContent="space-between">
                 <Button
                   color="inherit"
                   disabled={activeStep === 0}
                   onClick={handleBack}
-                  sx={{ mr: 1 }}
                 >
                   Back
                 </Button>
-                <Box sx={{ flex: "1 1 auto" }} />
                 <Button onClick={handleNext}>
                   {activeStep === steps.length - 1 ? "Finish" : "Next"}
                 </Button>
               </Box>
-            </React.Fragment>
+            </Box>
           )}
-        </Box>
-        <Box
-          sx={{
-            width: "100%",
-            maxHeight: 200,
-            backgroundColor: "lightgray",
-            margin: 2,
-            padding: 5,
-          }}
-        >
-          <Typography>Order summary</Typography>
-          <Typography>Shipping: {shippingCost}</Typography>
-
-          <Typography>Total: {grandTotal}</Typography>
-        </Box>
-      </Box>
-
-      <Typography variant="caption">
-        This is just an example checkout page. Please do not use real
-        information.
-      </Typography>
-
+        </Grid>
+        {activeStep < steps.length && (
+          <Grid item xs={12} md={4}>
+            {items.length > 0 && (
+              <Box
+                sx={{
+                  padding: 2,
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: 1,
+                  boxShadow: 1,
+                }}
+              >
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Order Summary
+                </Typography>
+                <List>
+                  {items.map((item) => (
+                    <ListItem key={item.id}>
+                      <ListItemAvatar>
+                        <Avatar alt="book cover" src={`${item.cover}`} />
+                      </ListItemAvatar>
+                      <ListItemText primary={item.name} />
+                      <Typography>{item.quantity}</Typography>
+                    </ListItem>
+                  ))}
+                </List>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Shipping Cost: {shippingCost}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Grand Total: {grandTotal}
+                </Typography>
+              </Box>
+            )}
+          </Grid>
+        )}
+      </Grid>
       <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Error</DialogTitle>
+        <DialogTitle>Validation Errors</DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
-            Please complete all required fields.
-          </Typography>
+          <Typography>{Object.values(errors).join(", ")}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseModal}>Close</Button>
