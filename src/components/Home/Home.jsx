@@ -10,6 +10,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Navbar from "../Navbar/Navbar";
 
 import image from "../../assets/promotion/Frame_37.png";
+import Footer from "../Footer";
 
 function Home() {
   const { topSellingBooks } = useBooks();
@@ -82,6 +83,7 @@ function Home() {
           </Box>
         </Box>
       </Box>
+      <Footer />
     </>
   );
 }

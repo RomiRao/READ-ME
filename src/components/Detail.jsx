@@ -15,6 +15,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 
 import { RotatingLines } from "react-loader-spinner";
+import Footer from "./Footer";
 
 // Creates table content
 function createData(label, data) {
@@ -122,6 +123,7 @@ function Detail() {
           </Box>
         )}
       </Container>
+      <Footer />
     </>
   );
 }

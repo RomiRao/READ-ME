@@ -99,6 +99,14 @@ const useBooks = () => {
 
   const filterBooks = async (filterType, filterValue) => {
     try {
+      if (!filterValue) {
+        // If no filter value is provided, reset the filtered books to the original list
+        setFilteredBooks(books);
+        return;
+      }
+
+      let data = [];
+
       if (filterType === "genre") {
         const booksCollection = collection(db, "books");
         const q = query(
@@ -106,20 +114,21 @@ const useBooks = () => {
           where("genre", "array-contains", filterValue)
         );
         const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map((doc) => ({
+        data = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setFilteredBooks(data);
       } else if (filterType === "name") {
         const lowerCaseFilterValue = filterValue.toLowerCase();
-        const filtered = books.filter((book) =>
+        data = books.filter((book) =>
           book.name.toLowerCase().includes(lowerCaseFilterValue)
         );
-        setFilteredBooks(filtered);
       } else {
-        setFilteredBooks(books);
+        // Reset to original list if an unknown filter type is provided
+        data = books;
       }
+
+      setFilteredBooks(data);
     } catch (error) {
       console.error("Error filtering books:", error);
     }
